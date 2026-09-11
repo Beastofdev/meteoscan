@@ -1,0 +1,11 @@
+# Los guiones de shell y los hooks los ejecuta bash, y fuera de Windows bash
+# necesita finales de linea LF: con CRLF, cada \r se lee como parte de la orden,
+# y un shebang que acaba en \r busca un interprete llamado "bash\r". En Windows
+# no se nota, porque el bash de Git for Windows se traga el \r.
+#
+# Con que finales se guardan y se entregan depende de la configuracion de cada
+# maquina: Git for Windows trae core.autocrlf en true, que los entrega en CRLF.
+# Estas lineas lo fijan en el propio repositorio, para que valgan lo mismo en
+# cualquier sitio.
+*.sh         text eol=lf
+.githooks/*  text eol=lf

@@ -1,0 +1,32 @@
+# Las mismas comprobaciones que el hook pre-push, pero en GitHub: en cada push
+# y en cada pull request, y dejando constancia en cada commit.
+#
+# No cuesta nada porque el repositorio es publico: en uno publico, los runners
+# estandar de GitHub Actions no gastan minutos. Si algun dia pasa a privado,
+# esto empieza a contar contra el cupo del plan, y hay que volver a mirar la
+# decision 0005.
+#
+# No lleva su propia lista: llama a check.sh, que es la unica.
+name: comprobaciones
+
+on:
+  push:
+  pull_request:
+
+# Solo leer el codigo. Un workflow que no escribe nada no necesita mas, y un
+# token con menos permisos es uno que hace menos dano si algo se tuerce.
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    # Sin esto, un trabajo colgado corre hasta el limite por defecto de GitHub,
+    # que son seis horas.
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - run: bash check.sh

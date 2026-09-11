@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+#
+# Corre las comprobaciones antes de cada push, para que no dependan de que
+# alguien se acuerde. Una comprobacion que no se dispara sola es una que un dia
+# deja de dispararse SIN AVISAR de que ha dejado.
+#
+# No lleva su propia lista: llama a check.sh, igual que GitHub Actions. Ver la
+# decision 0005.
+#
+# Comprueba la carpeta de trabajo tal como esta, no exactamente los commits que
+# se suben: si hay cambios sin commitear, mira esos. Lo que se sube de verdad lo
+# comprueba GitHub Actions.
+#
+# INSTALACION, una vez por clon:
+#
+#     git config core.hooksPath .githooks
+#
+# .git/hooks NO SE VERSIONA: un hook escrito ahi vive en una sola maquina y
+# desaparece al volver a clonar. core.hooksPath apunta a una carpeta que si
+# viaja con el repositorio. Git no lo activa solo a proposito --- clonar no debe
+# poder ejecutar codigo de un desconocido ---, asi que esa orden la da una
+# persona, una vez.
+#
+# PARA SALTARLO, a proposito y sabiendo lo que se hace:
+#
+#     git push --no-verify
+#
+# TIENE QUE SER EJECUTABLE EN EL INDICE, y desde Windows no lo es solo:
+#
+#     git add --chmod=+x .githooks/pre-push
+#     git ls-files -s .githooks/pre-push     # tiene que decir 100755
+#
+# En Windows no se nota, porque Git for Windows lanza los hooks a traves de sh.
+# En Linux y en macOS git se salta un hook que no es ejecutable: deja una linea
+# de aviso que se pierde entre el resto, no da error, y el push sale sin
+# comprobar nada.
+set -uo pipefail
+
+ROOT="$(git rev-parse --show-toplevel)"
+cd "$ROOT" || exit 1
+
+if ! bash check.sh; then
+    echo
+    echo "  PUSH DETENIDO. Arregla lo de arriba, o sube a proposito con:"
+    echo "      git push --no-verify"
+    exit 1
+fi
+
+echo
+echo "  Subiendo."
+exit 0

@@ -1,0 +1,23 @@
+# Dependencias: se instalan con npm install a partir del package-lock.json, que
+# si se versiona. node_modules pesa cientos de megas y depende de cada sistema.
+node_modules/
+
+# Credenciales y configuracion de cada maquina. Solo .env.example entra en el
+# repositorio: dice que variables hacen falta, sin sus valores. El repositorio
+# es publico, y un .env subido una vez se queda en el historial aunque se borre
+# despues.
+.env
+.env.*
+!.env.example
+
+# Lo que generan las herramientas al construir o al probar
+dist/
+build/
+coverage/
+*.log
+
+# Del sistema operativo y del editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
