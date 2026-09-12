@@ -18,7 +18,8 @@ los [requisitos](docs/especificacion.md).
 - **Una regla no se afloja porque un dato futuro no la cumpliría.** Un dato que
   no encaja se resuelve al recibirlo, no abriendo la columna.
 
-Las convenciones de nombres del esquema llegan con él, en `db/README.md`.
+Las convenciones de nombres del esquema, y cómo se carga, están en
+[`db/README.md`](db/README.md).
 
 ## La API
 

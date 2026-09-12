@@ -20,11 +20,12 @@ pasa de su umbral.
 ## Estado
 
 - [x] **Paso 0** — estructura, normas y registro de decisiones
-- [ ] **Paso 1** — base de datos. El diseño está decidido
+- [ ] **Paso 1** — base de datos. El esquema está en
+  [`db/schema.sql`](db/schema.sql)
   ([0006](docs/decisiones/0006-el-diseno-de-la-base-de-datos.md)) y PostgreSQL
   arranca en Docker
-  ([0007](docs/decisiones/0007-la-base-de-desarrollo-en-docker.md)); faltan las
-  tablas y sus pruebas
+  ([0007](docs/decisiones/0007-la-base-de-desarrollo-en-docker.md)); faltan sus
+  pruebas automáticas
 - [ ] **Paso 2** — API con Express, y el simulador de sensores
 - [ ] **Paso 3** — panel con React
 - [ ] README final
@@ -60,6 +61,9 @@ Y para arrancarla, en el puerto 5438 de este ordenador:
 ```
 docker compose up -d
 ```
+
+El esquema se carga con otra orden, que vacía las tablas: está en
+[`db/README.md`](db/README.md).
 
 ## Cómo comprobarlo
 
