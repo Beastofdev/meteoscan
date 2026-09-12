@@ -46,7 +46,9 @@ sensor_types 1 ──< sensors 1 ──< readings
    envía tarde lo que guardó.
 5. **Nombre y ubicación, obligatorios y sin quedar en blanco.** El nombre, de
    hasta 100 caracteres y único entre los sensores en servicio —el de uno dado
-   de baja queda libre—; la ubicación, de hasta 200.
+   de baja queda libre—, sin distinguir mayúsculas ni los espacios de los
+   extremos: «Sensor tejado» y «sensor tejado » son el mismo nombre. La
+   ubicación, de hasta 200.
 
 Y lo que se sigue de ahí:
 
@@ -61,9 +63,10 @@ Y lo que se sigue de ahí:
 - **`UNIQUE (sensor_id, recorded_at)`.** Un sensor no mide dos veces en el mismo
   instante, así que un envío repetido no duplica la lectura. El mismo índice
   sirve a la clave ajena, que PostgreSQL no indexa por su cuenta.
-- **Las claves:** `uuid` para el sensor, porque va en la URL y no se puede
-  adivinar ni recorrer; `BIGINT` para la lectura, porque son muchas filas que
-  solo se añaden; y el propio código (`'temperature'`) para el tipo.
+- **Las claves:** `uuid` para el sensor, porque va en la URL, y un id mal
+  tecleado no cae en otro sensor que exista; `BIGINT` para la lectura, porque
+  son muchas filas que solo se añaden; y el propio código (`'temperature'`)
+  para el tipo.
 
 ### Los valores de `sensor_types`
 
@@ -128,7 +131,7 @@ CREATE TABLE sensors (
     CONSTRAINT chk_sensors_retired_at CHECK (retired_at IS NULL OR retired_at >= created_at)
 );
 
-CREATE UNIQUE INDEX uq_sensors_name_in_service ON sensors (name) WHERE retired_at IS NULL;
+CREATE UNIQUE INDEX uq_sensors_name_in_service ON sensors (lower(btrim(name))) WHERE retired_at IS NULL;
 CREATE INDEX idx_sensors_sensor_type ON sensors (sensor_type);
 
 -- =====================================================
