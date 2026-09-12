@@ -1,0 +1,24 @@
+# La base de datos de desarrollo. La de las comprobaciones no va aqui: se crea
+# de cero y se destruye en cada pasada (decision 0004).
+services:
+  db:
+    # Se fija la version mayor, que es la que cambia el formato de los datos.
+    # Las menores son arreglos con el mismo formato, y llegan con
+    # "docker compose pull": Docker no las descarga solo.
+    image: postgres:18
+    # Usuario, base y clave solo cuentan la primera vez, con el volumen vacio:
+    # cambiarlos despues no cambia nada hasta borrar el volumen.
+    environment:
+      POSTGRES_USER: meteoscan
+      POSTGRES_DB: meteoscan
+      POSTGRES_PASSWORD: "${DB_PASSWORD:?copia .env.example a .env y rellenalo}"
+    ports:
+      # Solo desde este ordenador: sin la IP, Docker abre el puerto a la red.
+      - "127.0.0.1:5438:5432"
+    volumes:
+      # Desde la 18, la imagen guarda los datos en /var/lib/postgresql/18/docker.
+      # Un volumen en /var/lib/postgresql/data, como en la 17, los dejaria fuera.
+      - pgdata:/var/lib/postgresql
+
+volumes:
+  pgdata:
