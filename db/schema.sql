@@ -92,3 +92,31 @@ CREATE TABLE readings (
     -- duplica la lectura. Y sirve de indice para el historico de un sensor.
     CONSTRAINT uq_readings_sensor_recorded UNIQUE (sensor_id, recorded_at)
 );
+
+-- Rechaza una lectura medida despues de la baja de su sensor. Una medida ANTES
+-- si entra: un registrador que estuvo sin conexion envia tarde lo que guardo.
+-- El error lleva el codigo de un CHECK (23514) y el nombre de la regla en el
+-- mismo campo que una restriccion, para que la API lo trate como los demas.
+CREATE OR REPLACE FUNCTION trigger_readings_sensor_in_service() RETURNS trigger
+LANGUAGE plpgsql AS $$
+DECLARE
+    sensor_retired_at TIMESTAMPTZ;
+BEGIN
+    -- FOR SHARE: que nadie de de baja el sensor mientras entra la lectura.
+    SELECT retired_at INTO sensor_retired_at
+        FROM sensors WHERE sensor_id = NEW.sensor_id FOR SHARE;
+    IF sensor_retired_at IS NOT NULL AND NEW.recorded_at > sensor_retired_at THEN
+        RAISE EXCEPTION 'readings_sensor_in_service: el sensor % esta dado de baja desde %',
+            NEW.sensor_id, sensor_retired_at
+            USING ERRCODE = 'check_violation',
+                  CONSTRAINT = 'readings_sensor_in_service';
+    END IF;
+    RETURN NEW;
+END;
+$$;
+
+-- Tambien al cambiar el sensor o la hora de una lectura: la regla vale entre
+-- por donde entre.
+CREATE TRIGGER readings_sensor_in_service
+    BEFORE INSERT OR UPDATE OF sensor_id, recorded_at ON readings
+    FOR EACH ROW EXECUTE FUNCTION trigger_readings_sensor_in_service();

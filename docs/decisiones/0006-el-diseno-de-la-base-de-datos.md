@@ -42,8 +42,9 @@ sensor_types 1 ──< sensors 1 ──< readings
    `retired_at`; el sensor deja de salir en el panel y sus lecturas se quedan.
    La clave ajena en `RESTRICT` impide borrarlo de verdad aunque se intente por
    fuera de la API, y un disparador rechaza las lecturas medidas después de la
-   baja. Las medidas antes sí entran: un registrador que estuvo sin conexión
-   envía tarde lo que guardó.
+   baja, también si a una ya guardada se le cambia la hora o el sensor. Las
+   medidas antes sí entran: un registrador que estuvo sin conexión envía tarde
+   lo que guardó.
 5. **Nombre y ubicación, obligatorios y sin quedar en blanco.** El nombre, de
    hasta 100 caracteres y único entre los sensores en servicio —el de uno dado
    de baja queda libre—, sin distinguir mayúsculas ni los espacios de los
@@ -156,24 +157,30 @@ CREATE TABLE readings (
 
 -- Rechaza una lectura medida despues de la baja de su sensor. Una medida ANTES
 -- si entra: un registrador que estuvo sin conexion envia tarde lo que guardo.
--- FOR SHARE: que nadie de de baja el sensor mientras entra la lectura.
+-- El error lleva el codigo de un CHECK (23514) y el nombre de la regla en el
+-- mismo campo que una restriccion, para que la API lo trate como los demas.
 CREATE OR REPLACE FUNCTION trigger_readings_sensor_in_service() RETURNS trigger
 LANGUAGE plpgsql AS $$
 DECLARE
-    baja TIMESTAMPTZ;
+    sensor_retired_at TIMESTAMPTZ;
 BEGIN
-    SELECT retired_at INTO baja FROM sensors WHERE sensor_id = NEW.sensor_id FOR SHARE;
-    IF baja IS NOT NULL AND NEW.recorded_at > baja THEN
+    -- FOR SHARE: que nadie de de baja el sensor mientras entra la lectura.
+    SELECT retired_at INTO sensor_retired_at
+        FROM sensors WHERE sensor_id = NEW.sensor_id FOR SHARE;
+    IF sensor_retired_at IS NOT NULL AND NEW.recorded_at > sensor_retired_at THEN
         RAISE EXCEPTION 'readings_sensor_in_service: el sensor % esta dado de baja desde %',
-            NEW.sensor_id, baja
-            USING ERRCODE = 'check_violation';
+            NEW.sensor_id, sensor_retired_at
+            USING ERRCODE = 'check_violation',
+                  CONSTRAINT = 'readings_sensor_in_service';
     END IF;
     RETURN NEW;
 END;
 $$;
 
+-- Tambien al cambiar el sensor o la hora de una lectura: la regla vale entre
+-- por donde entre.
 CREATE TRIGGER readings_sensor_in_service
-    BEFORE INSERT ON readings
+    BEFORE INSERT OR UPDATE OF sensor_id, recorded_at ON readings
     FOR EACH ROW EXECUTE FUNCTION trigger_readings_sensor_in_service();
 
 INSERT INTO sensor_types (code, unit) VALUES
