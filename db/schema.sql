@@ -62,3 +62,33 @@ CREATE TABLE sensors (
 CREATE UNIQUE INDEX uq_sensors_name_in_service ON sensors (lower(btrim(name))) WHERE retired_at IS NULL;
 -- PostgreSQL no indexa por su cuenta la columna de una clave ajena.
 CREATE INDEX idx_sensors_sensor_type ON sensors (sensor_type);
+
+-- =====================================================
+-- READINGS
+-- =====================================================
+-- Una fila por medida: de que sensor, que valor y cuando se midio.
+DROP TABLE IF EXISTS readings CASCADE;
+CREATE TABLE readings (
+    -- BIGINT y no INTEGER: con mil sensores a una lectura por segundo, un
+    -- INTEGER se agota en menos de un mes.
+    reading_id   BIGINT            GENERATED ALWAYS AS IDENTITY,
+    sensor_id    uuid              NOT NULL,
+    value        DOUBLE PRECISION  NOT NULL,
+    -- Cuando se midio: lo manda el sensor, y el historico se dibuja con esta.
+    recorded_at  TIMESTAMPTZ       NOT NULL,
+    -- Cuando llego. Un registrador que estuvo sin conexion envia tarde lo que
+    -- guardo, y las dos no coinciden.
+    created_at   TIMESTAMPTZ       NOT NULL DEFAULT now(),
+
+    PRIMARY KEY (reading_id),
+    -- RESTRICT: un sensor con lecturas no se borra de verdad; se da de baja.
+    CONSTRAINT fk_readings_sensor_id FOREIGN KEY (sensor_id)
+        REFERENCES sensors (sensor_id) ON DELETE RESTRICT,
+    -- NaN es mayor que cualquier numero en PostgreSQL, asi que esto deja
+    -- fuera NaN, Infinity y -Infinity: valores validos del tipo que manda un
+    -- sensor averiado.
+    CONSTRAINT chk_readings_value CHECK (value > '-Infinity' AND value < 'Infinity'),
+    -- Un sensor no mide dos veces en el mismo instante: un envio repetido no
+    -- duplica la lectura. Y sirve de indice para el historico de un sensor.
+    CONSTRAINT uq_readings_sensor_recorded UNIQUE (sensor_id, recorded_at)
+);
