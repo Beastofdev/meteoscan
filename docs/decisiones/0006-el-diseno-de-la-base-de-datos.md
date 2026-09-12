@@ -104,7 +104,8 @@ CREATE TABLE sensor_types (
     created_at  TIMESTAMPTZ  NOT NULL DEFAULT now(),
 
     PRIMARY KEY (code),
-    CONSTRAINT chk_sensor_types_code CHECK (code ~ '^[a-z][a-z0-9_]*$')
+    CONSTRAINT chk_sensor_types_code CHECK (code ~ '^[a-z][a-z0-9_]*$'),
+    CONSTRAINT chk_sensor_types_unit CHECK (btrim(unit) <> '')
 );
 
 -- =====================================================
