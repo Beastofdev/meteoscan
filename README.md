@@ -20,12 +20,11 @@ pasa de su umbral.
 ## Estado
 
 - [x] **Paso 0** — estructura, normas y registro de decisiones
-- [ ] **Paso 1** — base de datos. El esquema está en
+- [x] **Paso 1** — base de datos: el esquema en
   [`db/schema.sql`](db/schema.sql)
-  ([0006](docs/decisiones/0006-el-diseno-de-la-base-de-datos.md)) y PostgreSQL
-  arranca en Docker
-  ([0007](docs/decisiones/0007-la-base-de-desarrollo-en-docker.md)); faltan sus
-  pruebas automáticas
+  ([0006](docs/decisiones/0006-el-diseno-de-la-base-de-datos.md)), PostgreSQL en
+  Docker ([0007](docs/decisiones/0007-la-base-de-desarrollo-en-docker.md)) y
+  sus pruebas en [`db/checks.sql`](db/checks.sql)
 - [ ] **Paso 2** — API con Express, y el simulador de sensores
 - [ ] **Paso 3** — panel con React
 - [ ] README final
@@ -70,6 +69,9 @@ El esquema se carga con otra orden, que vacía las tablas: está en
 ```
 bash check.sh
 ```
+
+Hace falta Docker en marcha: las pruebas del esquema corren en un PostgreSQL de
+usar y tirar.
 
 Y una vez por clon, para que se corra solo antes de cada push:
 

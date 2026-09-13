@@ -35,8 +35,9 @@ command -v node >/dev/null 2>&1 || { echo "FALLO  no hay node en el PATH"; exit 
 
 run_check "la documentacion" node docs/check_docs.mjs
 
-# El esquema entra aqui con el paso 1: db/check_all.sh, sobre un PostgreSQL de
-# usar y tirar en el 5439 (decision 0004).
+# El esquema, sobre un PostgreSQL de usar y tirar en el 5439 (decision 0004).
+# Hace falta Docker en marcha.
+run_check "el esquema" bash db/check_all.sh
 
 if [ "$ran" -eq 0 ]; then
     echo "FALLO  no se ha corrido ninguna comprobacion: la lista esta vacia"

@@ -30,12 +30,16 @@ pueda olvidar.
 
 Y tres reglas más, por el mismo motivo:
 
-- **Un rechazo esperado va entre `SAVEPOINT` y `ROLLBACK TO`.** Una orden que
+- **Un rechazo esperado no puede arrastrar a los de detrás.** Una orden que
   falla deja la transacción abortada, y todo lo que venga detrás falla *por
-  eso* y no por lo suyo: cuenta como rechazo y no ha comprobado nada. El guion
-  cuenta esas sentencias saltadas, y si no son cero, falla.
+  eso* y no por lo suyo: contaría como rechazo sin haber comprobado nada. Por
+  eso cada intento va dentro de un bloque con `EXCEPTION`, que PostgreSQL trata
+  como un `SAVEPOINT`: si falla, se deshace solo lo suyo. Y si un rechazo
+  esperado entra, se deshace también, para no dejar filas que confundan a las
+  pruebas de detrás.
 - **Cada rechazo tiene que venir por la restricción que dice su etiqueta.** Eso
-  no lo caza ningún contador: se comprueba leyendo el error.
+  no lo caza ningún contador: se comparan el código y el nombre de la regla que
+  trae el propio error.
 - **Si un resultado sale idéntico al de antes de un cambio grande, se sospecha
   del método antes que del cambio.**
 
@@ -48,13 +52,22 @@ segundos.
 **Fiarse del total de rechazos.** Un número que sube puede estar subiendo por el
 motivo equivocado.
 
+**Comparar el texto del error, o lo que guarda `psql` de él.** Una frase puede
+cambiar de una versión de PostgreSQL a otra, y `psql` solo guarda el código y
+el texto del último error: el nombre de la regla habría que sacarlo de la
+frase. Los campos del error, en cambio, lo traen tal cual.
+
 ## Lo que cuesta
 
-Hace falta Docker, y cada comprobación tarda unos segundos más que sobre una
-base ya montada. No hay atajo para probar una sola cosa sobre la base de
-desarrollo, y es deliberado: ese atajo es el que puede mentir.
+Hace falta Docker, también para subir: el hook corre `check.sh`, y sin Docker
+en marcha la prueba del esquema falla. Se puede subir a sabiendas con
+`git push --no-verify`. Cada pasada tarda unos segundos: crear el contenedor,
+cargar el esquema y pasar las pruebas llevan unos cuatro. No hay atajo para
+probar una sola cosa sobre la base de desarrollo, y es deliberado: ese atajo es
+el que puede mentir.
 
 ## Dónde vive en el código
 
-- `db/check_all.sh` — llega con el paso 1
-- [`check.sh`](../../check.sh) — lo llamará, con el resto de comprobaciones
+- [`db/check_all.sh`](../../db/check_all.sh) — el contenedor de usar y tirar
+- [`db/checks.sql`](../../db/checks.sql) — las pruebas, y cómo se comparan
+- [`check.sh`](../../check.sh) — lo llama, con el resto de comprobaciones

@@ -97,27 +97,12 @@ siendo distintas.
 
 ### Probado
 
-Sobre un PostgreSQL 17 de usar y tirar, destruido al acabar: nueve rechazos,
-cada uno por la restricción que dice su etiqueta, y ninguna sentencia saltada
-por transacción abortada.
-
-El 12 de septiembre de 2026 se repitió a mano sobre PostgreSQL 18, tabla a
-tabla, con las reglas que se añadieron al escribirlas. El guion que lo repite
-solo, `db/check_all.sh`, está por llegar.
-
-| Se rechaza | Por |
-|---|---|
-| Un valor `NaN`, `Infinity` o `-Infinity` (tres casos) | `chk_readings_value` |
-| La misma lectura dos veces | `uq_readings_sensor_recorded` |
-| Un sensor de un tipo que no existe | `fk_sensors_sensor_type` |
-| Un nombre en blanco | `chk_sensors_name` |
-| Dos sensores en servicio con el mismo nombre | `uq_sensors_name_in_service` |
-| Borrar un sensor con lecturas | `fk_readings_sensor_id` |
-| Una lectura medida después de la baja | `readings_sensor_in_service` |
-
-Y entran las tres cosas que deben entrar: una lectura normal, una medida antes
-de la baja que llega después, y un sensor nuevo con el nombre de uno dado de
-baja.
+Lo prueba [`db/checks.sql`](../../db/checks.sql), que pasa
+[`db/check_all.sh`](../../db/check_all.sh) sobre un PostgreSQL 18 de usar y
+tirar. Cada rechazo se compara por el código y el nombre de la regla que trae
+su error. Entre las pruebas están también las que el diseño tiene que dejar
+entrar: una lectura medida antes de la baja que llega tarde, y un sensor nuevo
+con el nombre de uno dado de baja.
 
 ## Lo que se descartó, y por qué
 

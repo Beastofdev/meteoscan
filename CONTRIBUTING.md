@@ -32,8 +32,9 @@ Las convenciones de nombres del esquema, y cómo se carga, están en
 - **Errores con un código estable además del mensaje**: el mensaje es para las
   personas, el código para los programas. La forma exacta se decide al construir
   la API.
-- **Los errores del motor no son para el usuario.** Un `23505`, un `23503` o un
-  `23514` se traducen a una respuesta HTTP, y en un solo sitio.
+- **Los errores del motor no son para el usuario.** Un `23505`, un `23503`, un
+  `23001` —borrar algo que otra fila usa— o un `23514` se traducen a una
+  respuesta HTTP, y en un solo sitio.
 - **Una operación de negocio, una transacción.**
 
 ## Comprobar
@@ -41,6 +42,7 @@ Las convenciones de nombres del esquema, y cómo se carga, están en
 ```
 bash check.sh                 # todas las comprobaciones: la única lista
 node docs/check_docs.mjs      # solo la documentación
+bash db/check_all.sh          # solo el esquema; hace falta Docker en marcha
 ```
 
 Las corre un hook antes de cada push, y GitHub Actions en cada push. El hook

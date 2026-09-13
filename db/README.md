@@ -3,6 +3,8 @@
 | Fichero | Qué es |
 |---|---|
 | [`schema.sql`](schema.sql) | El esquema: las tres tablas, sus reglas y el disparador. El porqué de cada cosa está en la [0006](../docs/decisiones/0006-el-diseno-de-la-base-de-datos.md) |
+| [`checks.sql`](checks.sql) | Sus pruebas: lo que tiene que entrar, y lo que tiene que saltar y por qué regla |
+| [`check_all.sh`](check_all.sh) | Pasa las pruebas sobre un PostgreSQL de usar y tirar |
 
 ## Cargar el esquema
 
@@ -29,6 +31,20 @@ Get-Content db/schema.sql | docker compose exec -T db psql -U meteoscan -v ON_ER
 
 Los `.sql` no llevan acentos: Windows PowerShell 5.1 pasa el texto por la
 tubería en ASCII, y una tilde llegaría como `?`.
+
+## Probar el esquema
+
+```
+bash db/check_all.sh
+```
+
+Crea un PostgreSQL de usar y tirar en el 5439, carga el esquema, pasa las
+pruebas y lo destruye al acabar, pase lo que pase. Nunca toca la base de
+desarrollo ([0004](../docs/decisiones/0004-toda-comprobacion-sobre-entorno-limpio.md)).
+Hace falta Docker en marcha, y también lo corre `bash check.sh`.
+
+Cada prueba compara el código del error y el nombre de su regla, no el texto
+del mensaje: una frase puede cambiar de una versión a otra.
 
 ## Los nombres
 
@@ -62,3 +78,4 @@ Copia el patrón de las que ya hay, entero, como pide
   pueda cargar dos veces. Las funciones van con `CREATE OR REPLACE`.
 - Va detrás de las tablas a las que apunta: una clave ajena no puede apuntar a
   una tabla que todavía no existe.
+- Cada regla nueva lleva su prueba en `checks.sql`, y se ve fallar una vez.
