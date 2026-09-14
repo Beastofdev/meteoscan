@@ -64,6 +64,24 @@ docker compose up -d
 El esquema se carga con otra orden, que vacía las tablas: está en
 [`db/README.md`](db/README.md).
 
+## Cómo arrancar la API
+
+Hace falta Node 24. La primera vez, las dependencias, desde `backend/`:
+
+```
+cd backend
+npm install
+```
+
+Y para arrancarla, en el puerto 8005 de este ordenador:
+
+```
+npm start
+```
+
+`npm run dev` hace lo mismo, pero se reinicia sola al guardar un cambio.
+`GET /health` contesta `{"status":"ok"}` si la API está viva.
+
 ## Cómo comprobarlo
 
 ```
