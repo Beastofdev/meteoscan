@@ -19,6 +19,7 @@ cosas está mal, y se ve enseguida.
 | [0006](0006-el-diseno-de-la-base-de-datos.md) | El diseño de la base de datos | Tres tablas, la unidad en el tipo de sensor, y baja lógica en vez de borrado |
 | [0007](0007-la-base-de-desarrollo-en-docker.md) | La base de desarrollo, en Docker | PostgreSQL 18 en un contenedor, abierto solo a este ordenador, y por qué no la 17 ni la 19 |
 | [0008](0008-la-api-con-express.md) | La API con Express | Express 5, la conexión con la base por variables de entorno, y las rutas en castellano con los campos como las columnas |
+| [0009](0009-los-errores-de-la-api.md) | Los errores de la API | Un formato propio con código estable y mensaje, el 404 y el 500 en JSON, y por qué no la RFC 9457 |
 
 ## Qué merece una decisión aquí
 

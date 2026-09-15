@@ -30,8 +30,8 @@ Las convenciones de nombres del esquema, y cómo se carga, están en
   esquema es la red, no el sustituto. Ver
   [0002](docs/decisiones/0002-la-base-de-datos-impone.md).
 - **Errores con un código estable además del mensaje**: el mensaje es para las
-  personas, el código para los programas. La forma exacta se decide al construir
-  la API.
+  personas, el código para los programas. La forma y la lista de códigos, en la
+  [0009](docs/decisiones/0009-los-errores-de-la-api.md).
 - **Los errores del motor no son para el usuario.** Un `23505`, un `23503`, un
   `23001` —borrar algo que otra fila usa— o un `23514` se traducen a una
   respuesta HTTP, y en un solo sitio.
