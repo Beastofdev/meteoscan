@@ -124,6 +124,14 @@ con el nombre de uno dado de baja.
 - **Un `uuid` como clave de `sensor_types`**, como en las otras tablas: con tres
   filas, obligaría a buscar el identificador antes de cada alta, y `sensors` no
   se leería sin un JOIN.
+- **Un `ENUM` de PostgreSQL para el tipo**
+  (`CREATE TYPE sensor_type AS ENUM (...)`), o **un `CHECK` con la lista
+  escrita dentro** (`sensor_type IN ('temperature', ...)`): ninguno de los dos
+  tiene sitio para la unidad del punto 2. Además, de un `ENUM` no se puede
+  quitar un valor sin tirar el tipo y volver a crearlo
+  ([documentación de PostgreSQL](https://www.postgresql.org/docs/18/datatype-enum.html)),
+  y cambiar la lista del `CHECK` es cambiar la tabla. Con una tabla, un tipo
+  nuevo es un `INSERT`.
 
 ## Lo que cuesta
 
