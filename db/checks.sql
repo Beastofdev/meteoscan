@@ -122,6 +122,9 @@ SELECT pg_temp.expect_rejection('sensors: ubicacion en blanco',
 SELECT pg_temp.expect_rejection('sensors: nombre de 101 caracteres',
     $$INSERT INTO sensors (name, sensor_type, location) VALUES (repeat('a', 101), 'temperature', 'Nave 1')$$,
     '22001', NULL);
+SELECT pg_temp.expect_rejection('sensors: ubicacion de 201 caracteres',
+    $$INSERT INTO sensors (name, sensor_type, location) VALUES ('Sensor B', 'temperature', repeat('a', 201))$$,
+    '22001', NULL);
 SELECT pg_temp.expect_rejection('sensors: nombre repetido en servicio',
     $$INSERT INTO sensors (name, sensor_type, location) VALUES ('Sensor nave 2', 'temperature', 'Nave 1')$$,
     '23505', 'uq_sensors_name_in_service');
