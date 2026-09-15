@@ -12,6 +12,10 @@ const app = express();
 // Que las respuestas no anuncien que la API es Express (decision 0009).
 app.disable('x-powered-by');
 
+// Lee el cuerpo de las peticiones que dicen traer JSON (Content-Type) y lo deja
+// en req.body. Sus errores, como un JSON mal escrito, los traduce errorHandler.
+app.use(express.json());
+
 // Contesta si la API esta viva y llega a la base. No es de los requisitos:
 // sirve para vigilar el propio servicio.
 app.get('/health', async (req, res) => {

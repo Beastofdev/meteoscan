@@ -60,6 +60,15 @@ sensores», pero un sensor eliminado no se borra: se da de baja.
     y si no hay ninguno, `[]` con `200`.
 14. **Un router de Express por recurso**, en `backend/src/routes/`, que
     `server.js` monta con `app.use`.
+15. **`POST /sensores` acepta un objeto JSON con tres campos de texto —`name`,
+    `sensor_type` y `location`— y ninguno más.** Les quita los espacios de los
+    extremos, cuenta los caracteres como PostgreSQL (un emoji, uno) y comprueba
+    las longitudes de sus columnas. Responde `201` con el sensor creado, con la
+    misma forma que `GET /sensores`, sacado con una sola orden: el `INSERT ...
+    RETURNING`, dentro de un `WITH`, y el `JOIN` de la unidad.
+16. **La validación, a mano**, en el fichero de cada recurso: una función que
+    comprueba y limpia el cuerpo, y lanza el primer error que encuentra. Los
+    errores, en la [0009](0009-los-errores-de-la-api.md).
 
 ## Lo que se descartó, y por qué
 
@@ -113,6 +122,19 @@ sensores», pero un sensor eliminado no se borra: se da de baja.
   capas** (rutas, controladores, servicios, repositorios), lo habitual en
   proyectos grandes, es demasiado para cinco rutas (0001): el SQL se queda en
   cada ruta, y si crece, se separa entonces.
+- **Ignorar los campos de más en un alta**: quien mandara `retired_at` creería
+  haberlo puesto.
+- **Rechazar los espacios de los extremos, o guardarlos tal cual**: lo primero
+  es demasiado estricto para un formulario; lo segundo deja datos sucios, y si
+  lo que sobra de un `VARCHAR` son espacios, PostgreSQL los recorta sin avisar.
+- **Contar con `.length`**: cuenta un emoji como dos, y rechazaría nombres que
+  la base acepta.
+- **Devolver solo el id del sensor creado, o sacarlo con dos consultas**: el
+  panel necesitaría otra petición para pintarlo, o serían dos viajes a la base.
+- **La cabecera `Location`**, lo típico de un `201`: apuntaría a
+  `GET /sensores/:id`, que no está en los requisitos.
+- **Una librería de validación**, como `zod` o `express-validator`: sería una
+  dependencia para tres campos (0001).
 
 ## Lo que cuesta
 
@@ -132,6 +154,10 @@ sensores», pero un sensor eliminado no se borra: se da de baja.
 - **Una base que tarde más de 2 segundos en aceptar una conexión se da por
   caída.** En este ordenador sobra; con una base remota habría que revisarlo.
 - **`/health` dice si la API llega a la base, no si cada ruta funciona.**
+- **La validación repite las longitudes de las columnas de `schema.sql`.** Si
+  una columna cambia y la API no, o sale un `500` —la base rechaza lo que la
+  API dejó pasar— o la API rechaza lo que la base aceptaría. Las pruebas de la
+  API tendrán que vigilarlo.
 
 ## Dónde vive en el código
 
@@ -142,7 +168,7 @@ sensores», pero un sensor eliminado no se borra: se da de baja.
 - [`backend/src/db.js`](../../backend/src/db.js) — la comprobación de las
   variables y el pool
 - [`backend/src/routes/sensors.js`](../../backend/src/routes/sensors.js) —
-  `GET /sensores`
+  `GET /sensores`, y `POST /sensores` con la validación del alta
 - [`.env.example`](../../.env.example) — las variables de la conexión
 
 ## Fuentes
