@@ -1,6 +1,7 @@
 // La API de MeteoScan.
 import express from 'express';
 import { pool } from './db.js';
+import sensorsRouter from './routes/sensors.js';
 
 // El puerto de la API (CONTRIBUTING).
 const PORT = 8005;
@@ -20,6 +21,9 @@ app.get('/health', async (req, res) => {
     res.status(503).json({ status: 'error', database: 'error' });
   }
 });
+
+// Cada recurso, con sus rutas en su fichero de routes/.
+app.use('/sensores', sensorsRouter);
 
 // Solo desde este ordenador, como la base de datos (decision 0007).
 app.listen(PORT, '127.0.0.1', (error) => {
