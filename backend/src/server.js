@@ -1,15 +1,24 @@
 // La API de MeteoScan.
 import express from 'express';
+import { pool } from './db.js';
 
 // El puerto de la API (CONTRIBUTING).
 const PORT = 8005;
 
 const app = express();
 
-// Contesta si la API esta viva. No es de los requisitos: sirve para vigilar
-// el propio servicio.
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok' });
+// Contesta si la API esta viva y llega a la base. No es de los requisitos:
+// sirve para vigilar el propio servicio.
+app.get('/health', async (req, res) => {
+  try {
+    await pool.query('SELECT 1');
+    res.json({ status: 'ok', database: 'ok' });
+  } catch (error) {
+    // Un fallo que se espera y se contesta aqui mismo. El detalle, solo en el
+    // registro del servidor: los errores del motor no son para el usuario.
+    console.error('La base no contesta:', error.message);
+    res.status(503).json({ status: 'error', database: 'error' });
+  }
 });
 
 // Solo desde este ordenador, como la base de datos (decision 0007).

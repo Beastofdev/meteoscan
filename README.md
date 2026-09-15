@@ -66,7 +66,9 @@ El esquema se carga con otra orden, que vacía las tablas: está en
 
 ## Cómo arrancar la API
 
-Hace falta Node 24. La primera vez, las dependencias, desde `backend/`:
+Hace falta Node 24, la base de datos en marcha y el `.env` de la raíz, con la
+clave y los datos de conexión (los trae `.env.example`). La primera vez, las
+dependencias, desde `backend/`:
 
 ```
 cd backend
@@ -79,8 +81,10 @@ Y para arrancarla, en el puerto 8005 de este ordenador:
 npm start
 ```
 
-`npm run dev` hace lo mismo, pero se reinicia sola al guardar un cambio.
-`GET /health` contesta `{"status":"ok"}` si la API está viva.
+`npm run dev` hace lo mismo, pero se reinicia sola al guardar un cambio. Si
+falta alguna variable del `.env`, la API no arranca y dice cuál.
+`GET /health` contesta `{"status":"ok","database":"ok"}` si la API está viva y
+llega a la base, y `503` si no llega.
 
 ## Cómo comprobarlo
 
