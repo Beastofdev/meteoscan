@@ -53,7 +53,10 @@ Lo que hace Express si no se le dice otra cosa no sirve:
    la clave ajena del tipo da `23503` al crear un sensor, y `23001` al borrar un
    tipo en uso. Lo demás, como un `22001` o un `CHECK`, no debería llegar a la
    base, porque la validación lo para antes: si llega, es un fallo de la API, y
-   sale como `500`.
+   sale como `500`. Tampoco se traduce el `22P02`, un texto que no se puede
+   convertir, como un id que no es un uuid: no dice de qué campo es, y sale
+   igual con un número o una fecha mal escritos. El formato se comprueba antes,
+   en la ruta.
 
    | Código | Restricción | Respuesta |
    |---|---|---|
@@ -63,7 +66,9 @@ Lo que hace Express si no se le dice otra cosa no sirve:
 7. **Los errores de `express.json()`** traen su código HTTP y un tipo:
    `entity.parse.failed` sale como `invalid_json`; `entity.too.large`, como
    `body_too_large`; y cualquier otro 4xx, como `invalid_body`. Sus 5xx son
-   fallos del servidor, y siguen al `500`.
+   fallos del servidor, y siguen al `500`. Y el del router de Express con un
+   `%` que no se puede descifrar en la dirección —un `URIError` con `status`
+   400— sale como `invalid_url`.
 8. **Un fallo inesperado responde `500` con `internal_error` y un mensaje
    genérico.** El error completo, con su traza, va solo al registro del
    servidor.
@@ -84,7 +89,9 @@ Cada error nuevo añade aquí su fila.
 | `invalid_body` | 400 | El cuerpo no es un objeto JSON, lleva un campo que no existe, o `express.json()` no lo ha podido leer (entonces, con el 4xx que traiga ese error) |
 | `invalid_field` | 400 | Un campo falta, no es texto, está en blanco o es demasiado largo |
 | `unknown_sensor_type` | 400 | El tipo de sensor no existe |
+| `invalid_url` | 400 | La dirección tiene un `%` que no se puede descifrar |
 | `not_found` | 404 | Ninguna ruta contesta a ese método y esa ruta |
+| `sensor_not_found` | 404 | No hay ningún sensor en servicio con ese id, o el id no es un uuid |
 | `sensor_name_taken` | 409 | Ya hay un sensor en servicio con ese nombre |
 | `body_too_large` | 413 | El cuerpo pasa del límite de `express.json()`, 100 KB |
 | `internal_error` | 500 | Un fallo que la API no esperaba |
@@ -153,7 +160,7 @@ Cada error nuevo añade aquí su fila.
 - [`backend/src/errors.js`](../../backend/src/errors.js) — `HttpError`, las
   traducciones, `notFound` y `errorHandler`
 - [`backend/src/routes/sensors.js`](../../backend/src/routes/sensors.js) — los
-  errores de la validación del alta
+  errores de la validación del alta, y el `404` de la baja
 - [`backend/src/server.js`](../../backend/src/server.js) — `express.json()`, la
   cabecera, y el orden: las rutas, `notFound` y `errorHandler`
 

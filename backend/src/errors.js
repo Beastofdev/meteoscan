@@ -55,6 +55,12 @@ function toHttpError(error) {
     return new HttpError(error.status, code, message);
   }
 
+  // Un % mal escrito en la direccion: el router de Express no puede descifrar
+  // el parametro, y lanza un URIError con status 400 (su codigo).
+  if (error instanceof URIError && error.status === 400) {
+    return new HttpError(400, 'invalid_url', 'La dirección no es válida.');
+  }
+
   return null;
 }
 

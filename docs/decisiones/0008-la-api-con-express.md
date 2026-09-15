@@ -69,6 +69,13 @@ sensores», pero un sensor eliminado no se borra: se da de baja.
 16. **La validación, a mano**, en el fichero de cada recurso: una función que
     comprueba y limpia el cuerpo, y lanza el primer error que encuentra. Los
     errores, en la [0009](0009-los-errores-de-la-api.md).
+17. **`DELETE /sensores/:id` da de baja el sensor**, con
+    `UPDATE sensors SET retired_at = now() WHERE sensor_id = $1 AND retired_at IS NULL`.
+    El `AND retired_at IS NULL` impide que una segunda baja mueva la fecha, y
+    hace que, con dos bajas a la vez, la segunda no cambie nada. Responde
+    `204`, sin cuerpo; y `404` si el sensor no existe, si ya estaba dado de
+    baja o si el id no es un uuid, cuyo formato se comprueba antes de tocar la
+    base.
 
 ## Lo que se descartó, y por qué
 
@@ -135,6 +142,17 @@ sensores», pero un sensor eliminado no se borra: se da de baja.
   `GET /sensores/:id`, que no está en los requisitos.
 - **Una librería de validación**, como `zod` o `express-validator`: sería una
   dependencia para tres campos (0001).
+- **Un `200` con el sensor dado de baja**: el panel solo tiene que quitarlo de
+  su lista, y `retired_at` es algo que la API no enseña. Para un `DELETE` hecho
+  sin nada más que decir, el estándar recomienda `204`
+  ([RFC 9110](https://www.rfc-editor.org/rfc/rfc9110)).
+- **Otro `204` para un sensor que ya estaba de baja**, porque `DELETE` es
+  idempotente: eso habla del efecto, que es el mismo, no de la respuesta. **Un
+  `409` o un `410` (Gone)**: revelarían que ese sensor existió, y para la API
+  un sensor dado de baja ya no existe.
+- **Un `400` para un id que no es un uuid**: el diagnóstico sería más preciso,
+  pero solo lo provoca una dirección escrita a mano, y el panel tendría un caso
+  más que atender.
 
 ## Lo que cuesta
 
@@ -158,6 +176,9 @@ sensores», pero un sensor eliminado no se borra: se da de baja.
   una columna cambia y la API no, o sale un `500` —la base rechaza lo que la
   API dejó pasar— o la API rechaza lo que la base aceptaría. Las pruebas de la
   API tendrán que vigilarlo.
+- **La API solo acepta el uuid en su forma normal**, 8-4-4-4-12 con guiones,
+  aunque PostgreSQL acepte también la que va sin guiones o entre llaves: con
+  esas, la API contesta `404`.
 
 ## Dónde vive en el código
 
@@ -168,7 +189,8 @@ sensores», pero un sensor eliminado no se borra: se da de baja.
 - [`backend/src/db.js`](../../backend/src/db.js) — la comprobación de las
   variables y el pool
 - [`backend/src/routes/sensors.js`](../../backend/src/routes/sensors.js) —
-  `GET /sensores`, y `POST /sensores` con la validación del alta
+  `GET /sensores`, `POST /sensores` con la validación del alta, y
+  `DELETE /sensores/:id`
 - [`.env.example`](../../.env.example) — las variables de la conexión
 
 ## Fuentes

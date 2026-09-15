@@ -89,4 +89,33 @@ function requiredText(value, field, { label, maxLength }) {
   return text;
 }
 
+// Un uuid en su forma normal, la que devuelve la API: 8-4-4-4-12 cifras
+// hexadecimales, en mayusculas o en minusculas.
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+// DELETE /sensores/:id: da de baja un sensor. No lo borra: le pone fecha de
+// baja, y sus lecturas se quedan (decision 0006).
+router.delete('/:id', async (req, res) => {
+  const { id } = req.params;
+  // Un id que no es un uuid no lleva a ningun sensor. Se mira aqui porque
+  // PostgreSQL lo rechazaria con un 22P02, un error que no dice de que campo
+  // es, y que tambien sale con numeros o fechas mal escritos.
+  if (!UUID_PATTERN.test(id)) throw sensorNotFound();
+  // Con retired_at IS NULL, la fecha de baja no se mueve. Con dos bajas a la
+  // vez, PostgreSQL hace esperar a la segunda y vuelve a mirar el WHERE: ya no
+  // hay fila que cambiar, y sale el 404.
+  const result = await pool.query(`
+    UPDATE sensors SET retired_at = now()
+     WHERE sensor_id = $1 AND retired_at IS NULL
+  `, [id]);
+  if (result.rowCount === 0) throw sensorNotFound();
+  res.status(204).end();
+});
+
+// Que no exista, que este dado de baja o que el id no sea un uuid: para quien
+// usa la API, las tres cosas son lo mismo.
+function sensorNotFound() {
+  return new HttpError(404, 'sensor_not_found', 'No hay ningún sensor con ese id.');
+}
+
 export default router;
