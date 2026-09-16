@@ -2,6 +2,7 @@
 import express from 'express';
 import { pool } from './db.js';
 import { errorHandler, notFound } from './errors.js';
+import readingsRouter from './routes/readings.js';
 import sensorsRouter from './routes/sensors.js';
 
 // El puerto de la API (CONTRIBUTING).
@@ -34,6 +35,7 @@ app.get('/health', async (req, res) => {
 
 // Cada recurso, con sus rutas en su fichero de routes/.
 app.use('/sensores', sensorsRouter);
+app.use('/lecturas', readingsRouter);
 
 // Detras de todas las rutas, y en este orden: lo que nadie ha contestado, y
 // despues los errores (decision 0009).

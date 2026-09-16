@@ -3,6 +3,7 @@
 import express from 'express';
 import { pool } from '../db.js';
 import { HttpError } from '../errors.js';
+import { UUID_PATTERN, checkBody } from '../validation.js';
 
 const router = express.Router();
 
@@ -51,17 +52,7 @@ router.post('/', async (req, res) => {
 // Comprueba y limpia el cuerpo de un alta antes de tocar la base, y lanza el
 // primer error que encuentra. La base vuelve a comprobarlo todo debajo (0002).
 function parseNewSensor(body) {
-  // Sin Content-Type JSON, express.json() deja el cuerpo en undefined; y una
-  // lista tambien es JSON, pero no un sensor.
-  if (typeof body !== 'object' || body === null || Array.isArray(body)) {
-    throw new HttpError(400, 'invalid_body', 'El cuerpo tiene que ser un objeto JSON.');
-  }
-  // Solo entran los campos de un alta: un retired_at, por ejemplo, no se cuela.
-  for (const field of Object.keys(body)) {
-    if (!Object.hasOwn(NEW_SENSOR_FIELDS, field)) {
-      throw new HttpError(400, 'invalid_body', `Un alta no lleva el campo ${field}.`, field);
-    }
-  }
+  checkBody(body, Object.keys(NEW_SENSOR_FIELDS));
   const sensor = {};
   for (const [field, rules] of Object.entries(NEW_SENSOR_FIELDS)) {
     sensor[field] = requiredText(body[field], field, rules);
@@ -88,10 +79,6 @@ function requiredText(value, field, { label, maxLength }) {
   }
   return text;
 }
-
-// Un uuid en su forma normal, la que devuelve la API: 8-4-4-4-12 cifras
-// hexadecimales, en mayusculas o en minusculas.
-const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 // DELETE /sensores/:id: da de baja un sensor. No lo borra: le pone fecha de
 // baja, y sus lecturas se quedan (decision 0006).

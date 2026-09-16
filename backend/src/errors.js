@@ -24,6 +24,12 @@ const DATABASE_ERRORS = new Map([
     new HttpError(409, 'sensor_name_taken', 'Ya hay un sensor en servicio con ese nombre.', 'name')],
   ['23503 fk_sensors_sensor_type',
     new HttpError(400, 'unknown_sensor_type', 'No existe ese tipo de sensor.', 'sensor_type')],
+  ['23503 fk_readings_sensor_id',
+    new HttpError(400, 'unknown_sensor', 'No existe ese sensor.', 'sensor_id')],
+  ['23514 readings_sensor_in_service',
+    new HttpError(409, 'sensor_retired', 'El sensor estaba dado de baja cuando se midió la lectura.')],
+  ['23505 uq_readings_sensor_recorded',
+    new HttpError(409, 'reading_already_exists', 'Ya hay una lectura de ese sensor en ese instante.', 'recorded_at')],
 ]);
 
 // Los errores de express.json() traen su codigo HTTP y un tipo (documentacion

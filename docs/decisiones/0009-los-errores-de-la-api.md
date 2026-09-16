@@ -62,6 +62,9 @@ Lo que hace Express si no se le dice otra cosa no sirve:
    |---|---|---|
    | `23505` | `uq_sensors_name_in_service` | `409`, `sensor_name_taken`, campo `name` |
    | `23503` | `fk_sensors_sensor_type` | `400`, `unknown_sensor_type`, campo `sensor_type` |
+   | `23503` | `fk_readings_sensor_id` | `400`, `unknown_sensor`, campo `sensor_id` |
+   | `23514` | `readings_sensor_in_service`, el disparador | `409`, `sensor_retired` |
+   | `23505` | `uq_readings_sensor_recorded` | `409`, `reading_already_exists`, campo `recorded_at` |
 
 7. **Los errores de `express.json()`** traen su código HTTP y un tipo:
    `entity.parse.failed` sale como `invalid_json`; `entity.too.large`, como
@@ -89,10 +92,13 @@ Cada error nuevo añade aquí su fila.
 | `invalid_body` | 400 | El cuerpo no es un objeto JSON, lleva un campo que no existe, o `express.json()` no lo ha podido leer (entonces, con el 4xx que traiga ese error) |
 | `invalid_field` | 400 | Un campo falta, no es texto, está en blanco o es demasiado largo |
 | `unknown_sensor_type` | 400 | El tipo de sensor no existe |
+| `unknown_sensor` | 400 | No existe ese sensor, o el `sensor_id` no es un uuid |
 | `invalid_url` | 400 | La dirección tiene un `%` que no se puede descifrar |
 | `not_found` | 404 | Ninguna ruta contesta a ese método y esa ruta |
 | `sensor_not_found` | 404 | No hay ningún sensor en servicio con ese id, o el id no es un uuid |
 | `sensor_name_taken` | 409 | Ya hay un sensor en servicio con ese nombre |
+| `sensor_retired` | 409 | El sensor estaba dado de baja cuando se midió la lectura |
+| `reading_already_exists` | 409 | Ya hay una lectura de ese sensor en ese instante |
 | `body_too_large` | 413 | El cuerpo pasa del límite de `express.json()`, 100 KB |
 | `internal_error` | 500 | Un fallo que la API no esperaba |
 
@@ -148,6 +154,9 @@ Cada error nuevo añade aquí su fila.
   equivocado.
 - **Los mensajes llevan tildes**, así que el código tiene texto fuera de ASCII,
   aunque solo en los mensajes.
+- **Un error traducido no lleva los datos del motor.** `sensor_retired` no dice
+  desde cuándo está de baja el sensor: esa fecha va en el mensaje de
+  PostgreSQL, que no se enseña.
 - **Quitar `X-Powered-By` no detiene a un atacante preparado**, como avisa la
   propia guía de seguridad de Express: hay otras formas de saber que una
   aplicación es Express. Lo que evita es anunciarlo en cada respuesta.
@@ -161,6 +170,10 @@ Cada error nuevo añade aquí su fila.
   traducciones, `notFound` y `errorHandler`
 - [`backend/src/routes/sensors.js`](../../backend/src/routes/sensors.js) — los
   errores de la validación del alta, y el `404` de la baja
+- [`backend/src/routes/readings.js`](../../backend/src/routes/readings.js) —
+  los errores de la validación de una lectura
+- [`backend/src/validation.js`](../../backend/src/validation.js) — el
+  `invalid_body` que comparten los dos routers
 - [`backend/src/server.js`](../../backend/src/server.js) — `express.json()`, la
   cabecera, y el orden: las rutas, `notFound` y `errorHandler`
 

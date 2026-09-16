@@ -67,8 +67,10 @@ sensores», pero un sensor eliminado no se borra: se da de baja.
     misma forma que `GET /sensores`, sacado con una sola orden: el `INSERT ...
     RETURNING`, dentro de un `WITH`, y el `JOIN` de la unidad.
 16. **La validación, a mano**, en el fichero de cada recurso: una función que
-    comprueba y limpia el cuerpo, y lanza el primer error que encuentra. Los
-    errores, en la [0009](0009-los-errores-de-la-api.md).
+    comprueba y limpia el cuerpo, y lanza el primer error que encuentra. Lo que
+    comparten los routers —el formato del uuid, que el cuerpo sea un objeto y
+    que no sobre ningún campo— está en `validation.js`. Los errores, en la
+    [0009](0009-los-errores-de-la-api.md).
 17. **`DELETE /sensores/:id` da de baja el sensor**, con
     `UPDATE sensors SET retired_at = now() WHERE sensor_id = $1 AND retired_at IS NULL`.
     El `AND retired_at IS NULL` impide que una segunda baja mueva la fecha, y
@@ -76,6 +78,18 @@ sensores», pero un sensor eliminado no se borra: se da de baja.
     `204`, sin cuerpo; y `404` si el sensor no existe, si ya estaba dado de
     baja o si el id no es un uuid, cuyo formato se comprueba antes de tocar la
     base.
+18. **`POST /lecturas` acepta un objeto JSON con tres campos —`sensor_id`,
+    `value` y `recorded_at`— y ninguno más.**
+    - `value` es un número JSON finito, sin límites por tipo de sensor.
+    - `recorded_at` es un texto con la forma de la
+      [RFC 3339](https://www.rfc-editor.org/rfc/rfc3339): con la zona
+      obligatoria (`Z` o `+hh:mm`, hasta 14 horas), una fecha que exista de
+      verdad y como mucho milisegundos. La API lo comprueba pieza a pieza, sin
+      `Date.parse`, y pasa el mismo texto a PostgreSQL.
+    - Un `sensor_id` que no es un uuid no lleva a ningún sensor.
+
+    Responde `201` con la lectura guardada: `reading_id` va como texto, como
+    lo da `pg`, y `recorded_at`, en UTC.
 
 ## Lo que se descartó, y por qué
 
@@ -153,6 +167,24 @@ sensores», pero un sensor eliminado no se borra: se da de baja.
 - **Un `400` para un id que no es un uuid**: el diagnóstico sería más preciso,
   pero solo lo provoca una dirección escrita a mano, y el panel tendría un caso
   más que atender.
+- **`Date.parse` para validar la hora de una lectura**: se inventa fechas —el
+  30 de febrero lo convierte en el 2 de marzo— y toma una hora sin zona como
+  hora del ordenador.
+- **Aceptar una hora sin zona y suponer UTC**, como hace PostgreSQL: con un
+  sensor en hora local, se guardaría mal sin avisar.
+- **Cualquier número de decimales**: PostgreSQL guarda microsegundos, pero
+  JavaScript solo milisegundos, así que la API devolvería otra hora que la
+  guardada.
+- **Límites por tipo de sensor**, como los que da la propia definición
+  (humedad relativa de 0 a 100, PM2.5 no negativo): un sensor real mal
+  calibrado manda valores algo fuera de rango, y se perderían. Quedan en
+  [`pendiente.md`](../pendiente.md).
+- **Tratar la lectura repetida como un éxito**, para que un sensor que
+  reintenta no reciba un error: habría que comparar el valor y decidir qué
+  cuenta como «la misma lectura».
+- **`reading_id` como número**: sería una conversión que un día podría ir mal,
+  al pasar de 2⁵³. **No devolverlo**: la lectura ya se identifica por su
+  sensor y su instante, pero lo normal es que un alta devuelva lo que guardó.
 
 ## Lo que cuesta
 
@@ -179,6 +211,14 @@ sensores», pero un sensor eliminado no se borra: se da de baja.
 - **La API solo acepta el uuid en su forma normal**, 8-4-4-4-12 con guiones,
   aunque PostgreSQL acepte también la que va sin guiones o entre llaves: con
   esas, la API contesta `404`.
+- **La hora de una lectura llega como mucho a milisegundos**, aunque
+  PostgreSQL guarde microsegundos: un sensor que mande más precisión recibe un
+  `400`.
+- **La forma de la hora es estricta**: con `T` entre la fecha y la hora, y con
+  la zona. Un texto como `2026-09-15 13:06:07+02:00`, que PostgreSQL
+  entendería, se rechaza.
+- **Las zonas llegan como mucho a 14 horas**: es la mayor que existe, la de
+  Kiribati, y PostgreSQL rechaza a partir de 16.
 
 ## Dónde vive en el código
 
@@ -191,6 +231,10 @@ sensores», pero un sensor eliminado no se borra: se da de baja.
 - [`backend/src/routes/sensors.js`](../../backend/src/routes/sensors.js) —
   `GET /sensores`, `POST /sensores` con la validación del alta, y
   `DELETE /sensores/:id`
+- [`backend/src/routes/readings.js`](../../backend/src/routes/readings.js) —
+  `POST /lecturas`, con la validación de la hora
+- [`backend/src/validation.js`](../../backend/src/validation.js) — lo que
+  comparten los routers
 - [`.env.example`](../../.env.example) — las variables de la conexión
 
 ## Fuentes
