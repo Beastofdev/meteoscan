@@ -1,5 +1,7 @@
 # MeteoScan
 
+[![comprobaciones](https://github.com/Beastofdev/meteoscan/actions/workflows/checks.yml/badge.svg)](https://github.com/Beastofdev/meteoscan/actions/workflows/checks.yml)
+
 Panel de monitorización de sensores —un mini SCADA web—. Una red simulada de
 sensores de temperatura, humedad y calidad del aire envía lecturas cada pocos
 segundos, y un panel web las lista, dibuja su evolución y avisa cuando un valor
