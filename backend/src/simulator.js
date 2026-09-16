@@ -68,7 +68,9 @@ async function tick() {
     }
     sensors = await response.json();
   } catch (error) {
-    console.error(`No se puede hablar con la API (${error.message}). Se reintenta en la vuelta siguiente.`);
+    // fetch envuelve el error de red: "fetch failed" no dice nada, y la causa
+    // (ECONNREFUSED, TimeoutError) esta dentro, en error.cause.
+    console.error(`No se puede hablar con la API (${error.cause?.code ?? error.name}). Se reintenta en la vuelta siguiente.`);
     return;
   }
   if (sensors.length === 0) {
