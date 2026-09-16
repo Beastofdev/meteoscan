@@ -86,6 +86,20 @@ falta alguna variable del `.env`, la API no arranca y dice cuál.
 `GET /health` contesta `{"status":"ok","database":"ok"}` si la API está viva y
 llega a la base, y `503` si no llega.
 
+## Cómo lanzar el simulador
+
+Con la API en marcha, desde `backend/`:
+
+```
+npm run simular
+```
+
+Cada cinco segundos manda una lectura de cada sensor en servicio, por
+`POST /lecturas`, con valores que se mueven poco a poco dentro del rango de su
+tipo. Se para con Ctrl+C, y si no hay sensores lo dice y espera. El ritmo se
+cambia con `SIM_INTERVAL_MS`, y la dirección de la API, con `API_URL`. Por qué
+es así: [0010](docs/decisiones/0010-el-simulador.md).
+
 ## Cómo comprobarlo
 
 ```

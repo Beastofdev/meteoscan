@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "start": "node --env-file=../.env src/server.js",
-    "dev": "node --watch --env-file=../.env src/server.js"
+    "dev": "node --watch --env-file=../.env src/server.js",
+    "simular": "node src/simulator.js"
   },
   "engines": {
     "node": ">=24"
