@@ -39,6 +39,11 @@ run_check "la documentacion" node docs/check_docs.mjs
 # Hace falta Docker en marcha.
 run_check "el esquema" bash db/check_all.sh
 
+# La API, contra otro PostgreSQL de usar y tirar y con la API en el 8005
+# (decision 0011). Hace falta Docker, las dependencias de backend/ y que la API
+# de desarrollo este parada.
+run_check "la API" bash backend/check_api.sh
+
 if [ "$ran" -eq 0 ]; then
     echo "FALLO  no se ha corrido ninguna comprobacion: la lista esta vacia"
     exit 1

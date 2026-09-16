@@ -29,4 +29,8 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: 24
+      # check.sh corre tambien las pruebas de la API, que necesitan las
+      # dependencias de backend/. npm ci instala exactamente las versiones de
+      # package-lock.json, y falla si el lock no cuadra con package.json.
+      - run: npm ci --prefix backend
       - run: bash check.sh

@@ -21,6 +21,7 @@ cosas está mal, y se ve enseguida.
 | [0008](0008-la-api-con-express.md) | La API con Express | Express 5, la conexión con la base por variables de entorno, y las rutas en castellano con los campos como las columnas |
 | [0009](0009-los-errores-de-la-api.md) | Los errores de la API | Un formato propio con código estable y mensaje, el 404 y el 500 en JSON, y por qué no la RFC 9457 |
 | [0010](0010-el-simulador.md) | El simulador | Escribe por `POST /lecturas`, simula los sensores en servicio y genera un paseo aleatorio por tipo |
+| [0011](0011-las-pruebas-de-la-api.md) | Las pruebas de la API | `node --test` sin librerías, sobre un PostgreSQL de usar y tirar y la API en marcha |
 
 ## Qué merece una decisión aquí
 

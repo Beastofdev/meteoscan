@@ -106,8 +106,11 @@ es así: [0010](docs/decisiones/0010-el-simulador.md).
 bash check.sh
 ```
 
-Hace falta Docker en marcha: las pruebas del esquema corren en un PostgreSQL de
-usar y tirar.
+Hace falta Docker en marcha: las pruebas del esquema y las de la API corren en
+un PostgreSQL de usar y tirar. Las de la API necesitan además las dependencias
+de `backend/` instaladas y el puerto 8005 libre, así que la API de desarrollo
+tiene que estar parada mientras corren
+([0011](docs/decisiones/0011-las-pruebas-de-la-api.md)).
 
 Y una vez por clon, para que se corra solo antes de cada push:
 
