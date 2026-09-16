@@ -90,6 +90,13 @@ sensores», pero un sensor eliminado no se borra: se da de baja.
 
     Responde `201` con la lectura guardada: `reading_id` va como texto, como
     lo da `pg`, y `recorded_at`, en UTC.
+19. **`GET /sensores/:id/lecturas` devuelve las últimas 1000 lecturas del
+    sensor**, de la más antigua a la más nueva, que es como las dibuja el
+    gráfico, y sin `sensor_id` en cada una, porque ya está en la dirección. Es
+    una lista a secas, y `[]` si no tiene ninguna. Responde `404` con la misma
+    regla que la baja: si el sensor no existe, si está dado de baja o si el id
+    no es un uuid. Hacen falta dos consultas, porque una sola no distinguiría
+    eso de un sensor sin lecturas.
 
 ## Lo que se descartó, y por qué
 
@@ -185,6 +192,19 @@ sensores», pero un sensor eliminado no se borra: se da de baja.
 - **`reading_id` como número**: sería una conversión que un día podría ir mal,
   al pasar de 2⁵³. **No devolverlo**: la lectura ya se identifica por su
   sensor y su instante, pero lo normal es que un alta devuelva lo que guardó.
+- **Devolver el histórico entero**: con el simulador en marcha, una sola
+  petición traería millones de filas.
+- **Devolverlo de la más nueva a la más antigua**: el panel tendría que darle
+  la vuelta antes de dibujar.
+- **Paginar con un cursor**, o aceptar `?desde` y `?hasta`: hace falta para
+  recorrer el histórico entero, y hoy nadie lo pide (0001). Queda en
+  [`pendiente.md`](../pendiente.md).
+- **Una sola consulta con `LEFT JOIN LATERAL`** para el histórico: ahorra un
+  viaje a la base, pero complica el SQL de una ruta, y las dos consultas usan
+  el mismo índice.
+- **Enseñar las lecturas de un sensor dado de baja**: `GET /sensores` no lo
+  enseña, así que esta ruta tampoco. Si no, la API diría dos cosas distintas
+  del mismo sensor.
 
 ## Lo que cuesta
 
@@ -219,6 +239,10 @@ sensores», pero un sensor eliminado no se borra: se da de baja.
   entendería, se rechaza.
 - **Las zonas llegan como mucho a 14 horas**: es la mayor que existe, la de
   Kiribati, y PostgreSQL rechaza a partir de 16.
+- **El histórico de un sensor dado de baja no se lee por la API**, aunque sus
+  lecturas sigan en la base.
+- **Con más de 1000 lecturas, la respuesta no avisa de que se ha cortado**:
+  quien la lee no sabe si hay más. Eso llegaría con la paginación.
 
 ## Dónde vive en el código
 
@@ -229,8 +253,8 @@ sensores», pero un sensor eliminado no se borra: se da de baja.
 - [`backend/src/db.js`](../../backend/src/db.js) — la comprobación de las
   variables y el pool
 - [`backend/src/routes/sensors.js`](../../backend/src/routes/sensors.js) —
-  `GET /sensores`, `POST /sensores` con la validación del alta, y
-  `DELETE /sensores/:id`
+  `GET /sensores`, `POST /sensores` con la validación del alta,
+  `DELETE /sensores/:id` y `GET /sensores/:id/lecturas`
 - [`backend/src/routes/readings.js`](../../backend/src/routes/readings.js) —
   `POST /lecturas`, con la validación de la hora
 - [`backend/src/validation.js`](../../backend/src/validation.js) — lo que

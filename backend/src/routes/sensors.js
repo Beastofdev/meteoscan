@@ -99,6 +99,38 @@ router.delete('/:id', async (req, res) => {
   res.status(204).end();
 });
 
+// Cuantas lecturas devuelve el historico: las ultimas, para que el panel
+// dibuje el tramo reciente sin traerse millones de filas (decision 0008).
+const READINGS_LIMIT = 1000;
+
+// GET /sensores/:id/lecturas: el historico de un sensor, de la mas antigua a
+// la mas nueva, que es como lo dibuja el grafico.
+router.get('/:id/lecturas', async (req, res) => {
+  const { id } = req.params;
+  if (!UUID_PATTERN.test(id)) throw sensorNotFound();
+  // Dos consultas: una sola no distinguiria un sensor que no existe (404) de
+  // uno sin lecturas (una lista vacia).
+  const sensor = await pool.query(`
+    SELECT 1 FROM sensors WHERE sensor_id = $1 AND retired_at IS NULL
+  `, [id]);
+  if (sensor.rowCount === 0) throw sensorNotFound();
+  // Las mas nuevas primero, para quedarse con las ultimas; y la vuelta por
+  // fuera, para devolverlas en orden. El indice de UNIQUE (sensor_id,
+  // recorded_at) sirve para las dos cosas.
+  const result = await pool.query(`
+    SELECT reading_id, value, recorded_at, created_at
+      FROM (
+        SELECT reading_id, value, recorded_at, created_at
+          FROM readings
+         WHERE sensor_id = $1
+         ORDER BY recorded_at DESC
+         LIMIT $2
+      ) ultimas
+     ORDER BY recorded_at
+  `, [id, READINGS_LIMIT]);
+  res.json(result.rows);
+});
+
 // Que no exista, que este dado de baja o que el id no sea un uuid: para quien
 // usa la API, las tres cosas son lo mismo.
 function sensorNotFound() {
