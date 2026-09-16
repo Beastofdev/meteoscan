@@ -1,0 +1,31 @@
+/* Lo comun a todo el panel: tipografia, colores y el ancho de la pagina. Lo
+   de cada pantalla vive en su propio fichero de estilos. */
+:root {
+  --texto: #1f2933;
+  --texto-suave: #52606d;
+  --fondo: #f5f7fa;
+  --fondo-caja: #ffffff;
+  --borde: #d9e2ec;
+  --alerta: #b4232a;
+
+  font-family: system-ui, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.5;
+  color: var(--texto);
+  background: var(--fondo);
+}
+
+body {
+  margin: 0;
+}
+
+#root {
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+h1 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin: 0 0 1rem;
+}

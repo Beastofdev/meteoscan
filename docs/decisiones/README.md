@@ -22,6 +22,7 @@ cosas está mal, y se ve enseguida.
 | [0009](0009-los-errores-de-la-api.md) | Los errores de la API | Un formato propio con código estable y mensaje, el 404 y el 500 en JSON, y por qué no la RFC 9457 |
 | [0010](0010-el-simulador.md) | El simulador | Escribe por `POST /lecturas`, simula los sensores en servicio y genera un paseo aleatorio por tipo |
 | [0011](0011-las-pruebas-de-la-api.md) | Las pruebas de la API | `node --test` sin librerías, sobre un PostgreSQL de usar y tirar y la API en marcha |
+| [0012](0012-el-panel-con-react.md) | El panel con React y Vite | React 19 con Vite en el 5177, y un proxy al 8005 en vez de abrir CORS en la API |
 
 ## Qué merece una decisión aquí
 

@@ -102,6 +102,27 @@ tipo. Se para con Ctrl+C, y si no hay sensores lo dice y espera. El ritmo se
 cambia con `SIM_INTERVAL_MS`, y la dirección de la API, con `API_URL`. Por qué
 es así: [0010](docs/decisiones/0010-el-simulador.md).
 
+## Cómo arrancar el panel
+
+Hace falta Node 24 y la API en marcha. La primera vez, las dependencias, desde
+`frontend/`:
+
+```
+cd frontend
+npm install
+```
+
+Y para arrancarlo:
+
+```
+npm run dev
+```
+
+Queda en <http://localhost:5177>. Las peticiones a `/sensores` y `/lecturas`
+las reenvía al 8005, donde escucha la API, así que no hace falta configurar
+nada más ([0012](docs/decisiones/0012-el-panel-con-react.md)). Si el 5177 está
+ocupado, no arranca y lo dice, en vez de mudarse a otro puerto.
+
 ## Cómo comprobarlo
 
 ```

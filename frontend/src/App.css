@@ -1,0 +1,17 @@
+/* La pantalla del panel. Por ahora solo la linea de estado: que ha contestado
+   la API, o por que no se ha podido preguntar. */
+.estado {
+  margin: 0;
+  padding: 1rem 1.25rem;
+  background: var(--fondo-caja);
+  border: 1px solid var(--borde);
+  border-radius: 0.5rem;
+  color: var(--texto-suave);
+}
+
+/* Cuando la API no contesta, el aviso se ve distinto: mismo sitio, otro color
+   y un borde que llama la atencion. */
+.estado-error {
+  color: var(--alerta);
+  border-color: var(--alerta);
+}
