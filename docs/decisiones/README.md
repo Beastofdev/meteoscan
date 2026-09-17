@@ -33,6 +33,15 @@ cosas está mal, y se ve enseguida.
 | [0020](0020-las-pruebas-del-panel.md) | Las pruebas del panel | Playwright contra la aplicación entera, solo Chromium, y los fallos que no se pueden provocar, simulados |
 | [0021](0021-docker-para-levantarlo-todo.md) | Docker para levantarlo todo | Un perfil levanta base, API, panel y simulador; nginx sirve el panel y reenvía `/api` |
 
+## Si solo vas a leer cinco
+
+La [0002](0002-la-base-de-datos-impone.md), la postura; la
+[0006](0006-el-diseno-de-la-base-de-datos.md), el diseño de la base; la
+[0009](0009-los-errores-de-la-api.md), cómo se cuentan los errores; la
+[0016](0016-el-detalle-de-un-sensor.md), un problema que apareció al probar y
+cómo se resolvió; y la [0017](0017-los-umbrales-de-alerta.md), de dónde sale
+cada umbral y por qué uno se quedó sin él.
+
 ## Qué merece una decisión aquí
 
 Lo que **alguien podría querer deshacer sin saber lo que costó**. Si al leer el

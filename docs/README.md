@@ -13,12 +13,24 @@ Lo que hace está en el código; cómo se arranca, en el
 
 ## Por dónde empezar
 
-1. Los [requisitos](especificacion.md).
-2. La [0001](decisiones/0001-de-donde-salen-las-reglas.md), que cuenta de dónde
-   salen las normas del proyecto.
-3. La [0006](decisiones/0006-el-diseno-de-la-base-de-datos.md), el diseño de la
-   base de datos, y la [0002](decisiones/0002-la-base-de-datos-impone.md), la
-   postura de la que sale.
+1. Los [requisitos](especificacion.md): lo que se pidió.
+2. La [0002](decisiones/0002-la-base-de-datos-impone.md), la postura de la que
+   sale todo lo demás, y la [0006](decisiones/0006-el-diseno-de-la-base-de-datos.md),
+   el diseño de la base.
+3. La [0008](decisiones/0008-la-api-con-express.md) y la
+   [0009](decisiones/0009-los-errores-de-la-api.md): la API y sus errores.
+4. La [0012](decisiones/0012-el-panel-con-react.md) y la
+   [0016](decisiones/0016-el-detalle-de-un-sensor.md): el panel, y el problema de
+   direcciones que apareció al probarlo.
+5. La [0017](decisiones/0017-los-umbrales-de-alerta.md): de dónde salen los
+   umbrales, y por qué la humedad no tiene.
+
+Y si lo que quieres es leer **código**, cada carpeta dice por dónde empezar:
+[`backend/`](../backend/README.md), [`frontend/`](../frontend/README.md) y
+[`db/`](../db/README.md).
+
+Para saber de dónde salen las normas del proyecto, la
+[0001](decisiones/0001-de-donde-salen-las-reglas.md).
 
 ## Cómo se añade una decisión
 

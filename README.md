@@ -129,6 +129,10 @@ check.sh             la única lista de comprobaciones
 .github/workflows/   las corre en GitHub, en cada push
 ```
 
+**Cada carpeta tiene su propia guía**, con qué hay dentro y por dónde empezar a
+leer: [`backend/`](backend/README.md), [`frontend/`](frontend/README.md),
+[`db/`](db/README.md) y [`docs/`](docs/README.md).
+
 ## Cómo se comprueba
 
 ```
