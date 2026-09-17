@@ -4,47 +4,106 @@
 
 Panel de monitorización de sensores —un mini SCADA web—. Una red simulada de
 sensores de temperatura, humedad y calidad del aire envía lecturas cada pocos
-segundos, y un panel web las lista, dibuja su evolución y avisa cuando un valor
-pasa de su umbral.
+segundos; el panel las lista, dibuja su evolución y avisa en rojo cuando un
+valor pasa del umbral de su tipo.
 
-> **En construcción.** Este README se completa al final. Hoy dice qué hay, qué
-> falta y cómo comprobarlo.
+![El panel, con tres sensores y uno por encima de su umbral](docs/imagenes/panel.png)
+
+## Qué hace
+
+```
+ simulador ──POST /lecturas──►  API  ──►  PostgreSQL
+                                 ▲
+     panel ───────GET────────────┘   (cada 5 s)
+```
+
+- **El simulador** hace de red de sensores: cada cinco segundos manda una
+  lectura de cada sensor en servicio **por la misma API** que usaría un sensor
+  de verdad, con valores que se mueven poco a poco dentro del rango de su tipo.
+- **La API** comprueba cada entrada antes de tocar la base, y la base vuelve a
+  comprobarlo todo debajo.
+- **El panel** lista los sensores con su último valor, da de alta y de baja,
+  dibuja el histórico de cada uno y marca en rojo el que pasa de su umbral. Se
+  pone al día solo cada cinco segundos.
+
+Los umbrales viven en el tipo de sensor: **35 °C** y **35 µg/m³** de PM2.5, cada
+uno con su fuente en la
+[0017](docs/decisiones/0017-los-umbrales-de-alerta.md); la humedad no tiene,
+porque al aire libre no hay un límite que citar.
 
 ## Stack
 
 | | |
 |---|---|
-| API | Node.js + Express |
-| Base de datos | PostgreSQL |
-| Panel | React con Vite |
+| API | Node.js 24 y Express 5 |
+| Base de datos | PostgreSQL 18, en Docker |
+| Panel | React 19 con Vite, React Router y recharts |
+| Pruebas | `node --test` y SQL, sin librerías de pruebas |
 | Integración continua | GitHub Actions |
 
-## Estado
+## Cómo arrancarlo
 
-- [x] **Paso 0** — estructura, normas y registro de decisiones
-- [x] **Paso 1** — base de datos: el esquema en
-  [`db/schema.sql`](db/schema.sql)
-  ([0006](docs/decisiones/0006-el-diseno-de-la-base-de-datos.md)), PostgreSQL en
-  Docker ([0007](docs/decisiones/0007-la-base-de-desarrollo-en-docker.md)) y
-  sus pruebas en [`db/checks.sql`](db/checks.sql)
-- [x] **Paso 2** — API con Express: las cinco rutas de la especificación y
-  `GET /health` ([0008](docs/decisiones/0008-la-api-con-express.md)), sus
-  errores ([0009](docs/decisiones/0009-los-errores-de-la-api.md)), el simulador
-  de sensores ([0010](docs/decisiones/0010-el-simulador.md)) y las pruebas de la
-  API ([0011](docs/decisiones/0011-las-pruebas-de-la-api.md))
-- [x] **Paso 3** — panel con React
-  ([0012](docs/decisiones/0012-el-panel-con-react.md)): la lista, el alta, la
-  baja, el detalle con el gráfico y la alerta del umbral
-  ([0013](docs/decisiones/0013-la-lista-de-sensores.md) a
-  [0019](docs/decisiones/0019-la-alerta-y-el-refresco.md))
-- [ ] README final
+Hacen falta **Docker** y **Node 24**. Una vez por clon, el `.env` a partir de su
+plantilla, con una contraseña de letras y números:
+
+```
+cp .env.example .env
+```
+
+Después, cada cosa en su terminal:
+
+```
+# 1. la base de datos, en el 5438
+docker compose up -d
+
+# 2. el esquema, la primera vez. OJO: vacía las tablas
+docker compose exec -T db psql -U meteoscan -v ON_ERROR_STOP=1 < db/schema.sql
+
+# 3. la API, en el 8005
+cd backend && npm install && npm run dev
+
+# 4. el panel, en el 5177
+cd frontend && npm install && npm run dev
+
+# 5. el simulador: sin él, los sensores no tienen lecturas
+cd backend && npm run simular
+```
+
+Y el panel queda en <http://localhost:5177>.
+
+Detalles que conviene saber:
+
+- **En PowerShell**, la orden del esquema se escribe de otra forma, porque no
+  tiene `<`: está en [`db/README.md`](db/README.md).
+- **`npm run dev`** reinicia la API sola al guardar un cambio; `npm start` la
+  arranca sin más. Si falta alguna variable del `.env`, no arranca y dice cuál.
+- **El panel llama a la API por `/api`**, y su servidor de desarrollo reenvía
+  esas peticiones al 8005 quitando el prefijo: no hay nada más que configurar
+  ([0016](docs/decisiones/0016-el-detalle-de-un-sensor.md)).
+- **El ritmo del simulador** se cambia con `SIM_INTERVAL_MS`, y la dirección de
+  la API, con `API_URL`.
+
+## La API
+
+| Ruta | Qué hace |
+|---|---|
+| `GET /sensores` | Los sensores en servicio, con la unidad y el umbral de su tipo, y su última lectura |
+| `POST /sensores` | Da de alta un sensor: `name`, `sensor_type` y `location` |
+| `DELETE /sensores/:id` | Lo da de baja: desaparece de la lista y deja de aceptar lecturas; las que tiene se conservan |
+| `GET /sensores/:id/lecturas` | Su histórico: las últimas 1000, de la más antigua a la más nueva |
+| `POST /lecturas` | Guarda una lectura: `sensor_id`, `value` y `recorded_at` en RFC 3339, con zona horaria |
+| `GET /health` | `{"status":"ok","database":"ok"}` si la API está viva y llega a la base; `503` si no llega |
+
+Los errores viajan en JSON, con un **código estable** para los programas y un
+mensaje para las personas
+([0009](docs/decisiones/0009-los-errores-de-la-api.md)).
 
 ## Cómo está organizado
 
 ```
-db/                  el esquema y sus pruebas                   (paso 1)
-backend/             la API con Express y el simulador          (paso 2)
-frontend/            el panel con React                         (paso 3)
+db/                  el esquema y sus pruebas
+backend/             la API con Express y el simulador
+frontend/            el panel con React
 docs/                los requisitos, las decisiones y lo aparcado
 compose.yaml         la base de datos de desarrollo, en Docker
 .env.example         las variables que hay que copiar a .env
@@ -54,111 +113,47 @@ check.sh             la única lista de comprobaciones
 .github/workflows/   las corre en GitHub, en cada push
 ```
 
-Cada carpeta se crea al llegar a su paso: una carpeta vacía no explica nada.
-
-## Cómo arrancar la base de datos
-
-Hace falta Docker. Una vez por clon, el `.env` a partir de su plantilla, con una
-contraseña de letras y números:
-
-```
-cp .env.example .env
-```
-
-Y para arrancarla, en el puerto 5438 de este ordenador:
-
-```
-docker compose up -d
-```
-
-El esquema se carga con otra orden, que vacía las tablas: está en
-[`db/README.md`](db/README.md).
-
-## Cómo arrancar la API
-
-Hace falta Node 24, la base de datos en marcha y el `.env` de la raíz, con la
-clave y los datos de conexión (los trae `.env.example`). La primera vez, las
-dependencias, desde `backend/`:
-
-```
-cd backend
-npm install
-```
-
-Y para arrancarla, en el puerto 8005 de este ordenador:
-
-```
-npm start
-```
-
-`npm run dev` hace lo mismo, pero se reinicia sola al guardar un cambio. Si
-falta alguna variable del `.env`, la API no arranca y dice cuál.
-`GET /health` contesta `{"status":"ok","database":"ok"}` si la API está viva y
-llega a la base, y `503` si no llega.
-
-## Cómo lanzar el simulador
-
-Con la API en marcha, desde `backend/`:
-
-```
-npm run simular
-```
-
-Cada cinco segundos manda una lectura de cada sensor en servicio, por
-`POST /lecturas`, con valores que se mueven poco a poco dentro del rango de su
-tipo. Se para con Ctrl+C, y si no hay sensores lo dice y espera. El ritmo se
-cambia con `SIM_INTERVAL_MS`, y la dirección de la API, con `API_URL`. Por qué
-es así: [0010](docs/decisiones/0010-el-simulador.md).
-
-## Cómo arrancar el panel
-
-Hace falta Node 24 y la API en marcha. La primera vez, las dependencias, desde
-`frontend/`:
-
-```
-cd frontend
-npm install
-```
-
-Y para arrancarlo:
-
-```
-npm run dev
-```
-
-Queda en <http://localhost:5177>. Lo que el panel pide a `/api` lo reenvía al
-8005, donde escucha la API, quitando el prefijo, así que no hace falta
-configurar nada más ([0012](docs/decisiones/0012-el-panel-con-react.md),
-[0016](docs/decisiones/0016-el-detalle-de-un-sensor.md)). Si el 5177 está
-ocupado, no arranca y lo dice, en vez de mudarse a otro puerto.
-
-El detalle de cada sensor dibuja sus lecturas: sin el simulador en marcha, un
-sensor nuevo no tiene nada que dibujar.
-
-La pantalla se pone al día sola cada cinco segundos, así que con el simulador en
-marcha los valores y las alertas cambian sin recargar
-([0019](docs/decisiones/0019-la-alerta-y-el-refresco.md)).
-
-## Cómo comprobarlo
+## Cómo se comprueba
 
 ```
 bash check.sh
 ```
 
-Hace falta Docker en marcha: las pruebas del esquema y las de la API corren en
-un PostgreSQL de usar y tirar. Las de la API necesitan además las dependencias
-de `backend/` instaladas y el puerto 8005 libre, así que la API de desarrollo
-tiene que estar parada mientras corren
-([0011](docs/decisiones/0011-las-pruebas-de-la-api.md)).
+Cuatro comprobaciones: **la documentación** (enlaces y decisiones), **los tipos
+del panel** (que son los mismos que los de la base), **el esquema** (42 pruebas)
+y **la API** (25 pruebas).
 
-Y una vez por clon, para que se corra solo antes de cada push:
+Las dos últimas necesitan **Docker en marcha**: corren sobre un PostgreSQL de
+usar y tirar que se crea y se destruye en cada pasada, nunca sobre la base de
+desarrollo
+([0004](docs/decisiones/0004-toda-comprobacion-sobre-entorno-limpio.md)). Las de
+la API necesitan además las dependencias de `backend/` instaladas y **el puerto
+8005 libre**, así que la API de desarrollo tiene que estar parada mientras
+corren ([0011](docs/decisiones/0011-las-pruebas-de-la-api.md)).
+
+La misma lista corre **antes de cada push** y **en GitHub**, en cada push y en
+cada pull request
+([0005](docs/decisiones/0005-comprobaciones-en-local-y-en-ci.md)). Para que el
+hook se dispare, una vez por clon:
 
 ```
 git config core.hooksPath .githooks
 ```
 
+## Lo que queda fuera, a propósito
+
+Migraciones en lugar de recrear el esquema, pedir un tramo concreto del
+histórico, los límites de lo plausible de cada tipo de sensor, las lecturas
+medidas «en el futuro» y rechazar un cuerpo que no sea UTF-8 válido. Cada una
+está en [`docs/pendiente.md`](docs/pendiente.md) con **el momento en que se
+retoma y el motivo de la espera**.
+
 ## Por qué es así
 
 Cada decisión que alguien podría querer deshacer sin saber lo que costó está en
 [`docs/decisiones/`](docs/decisiones/README.md), con las alternativas que se
-descartaron.
+descartaron: el diseño de la base, los errores de la API, el proxy del panel,
+los umbrales y su fuente, y cómo se comprueba todo.
+
+Las normas del repositorio —el esquema, la API, los commits, el idioma— están en
+[`CONTRIBUTING.md`](CONTRIBUTING.md).
