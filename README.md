@@ -32,12 +32,11 @@ pasa de su umbral.
   errores ([0009](docs/decisiones/0009-los-errores-de-la-api.md)), el simulador
   de sensores ([0010](docs/decisiones/0010-el-simulador.md)) y las pruebas de la
   API ([0011](docs/decisiones/0011-las-pruebas-de-la-api.md))
-- [ ] **Paso 3** — panel con React
-  ([0012](docs/decisiones/0012-el-panel-con-react.md)): hechos la lista, el
-  alta, la baja y el detalle con el gráfico
+- [x] **Paso 3** — panel con React
+  ([0012](docs/decisiones/0012-el-panel-con-react.md)): la lista, el alta, la
+  baja, el detalle con el gráfico y la alerta del umbral
   ([0013](docs/decisiones/0013-la-lista-de-sensores.md) a
-  [0016](docs/decisiones/0016-el-detalle-de-un-sensor.md)); falta la alerta del
-  umbral
+  [0019](docs/decisiones/0019-la-alerta-y-el-refresco.md))
 - [ ] README final
 
 ## Cómo está organizado
@@ -135,6 +134,10 @@ ocupado, no arranca y lo dice, en vez de mudarse a otro puerto.
 
 El detalle de cada sensor dibuja sus lecturas: sin el simulador en marcha, un
 sensor nuevo no tiene nada que dibujar.
+
+La pantalla se pone al día sola cada cinco segundos, así que con el simulador en
+marcha los valores y las alertas cambian sin recargar
+([0019](docs/decisiones/0019-la-alerta-y-el-refresco.md)).
 
 ## Cómo comprobarlo
 

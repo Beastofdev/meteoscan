@@ -77,3 +77,37 @@
 .sensor-card-name a:focus-visible {
   text-decoration: underline;
 }
+
+/* La ultima lectura: el valor, grande, y su hora al lado. */
+.sensor-card-reading {
+  margin: 0.75rem 0 0;
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.sensor-card-value {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.sensor-card-time,
+.sensor-card-no-reading {
+  color: var(--text-muted);
+}
+
+/* Por encima del umbral: el borde, el valor y un texto. El texto es lo que hace
+   que la alerta no dependa solo del color. */
+.sensor-card-over {
+  border-color: var(--alert);
+}
+
+.sensor-card-over .sensor-card-value,
+.sensor-card-over-text {
+  color: var(--alert);
+}
+
+.sensor-card-over-text {
+  margin: 0.25rem 0 0;
+  font-weight: 600;
+}

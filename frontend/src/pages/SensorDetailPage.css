@@ -20,3 +20,35 @@
   margin: 0;
   color: var(--text-muted);
 }
+
+/* La ultima lectura, sobre el grafico. */
+.sensor-detail-reading {
+  margin: 0 0 1rem;
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.sensor-detail-value {
+  font-size: 1.75rem;
+  font-weight: 600;
+}
+
+.sensor-detail-time,
+.sensor-detail-no-reading {
+  color: var(--text-muted);
+}
+
+.sensor-detail-over .sensor-detail-value,
+.sensor-detail-over-text {
+  color: var(--alert);
+}
+
+.sensor-detail-over {
+  border-color: var(--alert);
+}
+
+.sensor-detail-over-text {
+  margin: -0.75rem 0 1rem;
+  font-weight: 600;
+}

@@ -2,15 +2,16 @@ import {
   CartesianGrid,
   Line,
   LineChart,
+  ReferenceLine,
   ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
 } from 'recharts'
+import { formatDateAndTime, formatNumber } from '../format.js'
 import './ReadingsChart.css'
 
-// Las horas, en la zona del navegador y con formato espanol: la API las da en
-// UTC (0016).
+// Las horas del eje, en la zona del navegador y con formato espanol (0016).
 const WITH_SECONDS = new Intl.DateTimeFormat('es-ES', { timeStyle: 'medium' })
 const WITH_MINUTES = new Intl.DateTimeFormat('es-ES', { hour: '2-digit', minute: '2-digit' })
 const WITH_DAY = new Intl.DateTimeFormat('es-ES', {
@@ -19,8 +20,6 @@ const WITH_DAY = new Intl.DateTimeFormat('es-ES', {
   hour: '2-digit',
   minute: '2-digit',
 })
-const TOOLTIP_TIME = new Intl.DateTimeFormat('es-ES', { dateStyle: 'short', timeStyle: 'medium' })
-const NUMBER = new Intl.NumberFormat('es-ES', { maximumFractionDigits: 2 })
 
 const MINUTE = 60_000
 const DAY = 24 * 60 * MINUTE
@@ -37,8 +36,8 @@ function axisTimeFormat(points) {
 
 // La evolucion de las lecturas de un sensor, de la mas antigua a la mas nueva,
 // que es el orden en que las da la API. Nunca recibe una lista vacia: de eso se
-// encarga quien lo usa.
-export default function ReadingsChart({ readings, unit }) {
+// encarga quien lo usa. threshold puede ser null: hay tipos sin umbral.
+export default function ReadingsChart({ readings, unit, threshold }) {
   // La hora, como numero de milisegundos: asi el eje separa los puntos segun el
   // tiempo que paso entre ellos, y no uno por lectura.
   const points = readings.map((reading) => ({
@@ -62,14 +61,31 @@ export default function ReadingsChart({ readings, unit }) {
           <YAxis
             width={64}
             domain={['auto', 'auto']}
-            tickFormatter={(value) => NUMBER.format(value)}
+            tickFormatter={(value) => formatNumber(value)}
           />
           <Tooltip
-            labelFormatter={(time) => TOOLTIP_TIME.format(time)}
-            formatter={(value) => `${NUMBER.format(value)} ${unit}`}
+            labelFormatter={(time) => formatDateAndTime(new Date(time).toISOString())}
+            formatter={(value) => `${formatNumber(value)} ${unit}`}
           />
-          {/* Sin puntos: con cientos de lecturas taparian la linea. */}
-          <Line type="linear" dataKey="value" name="Valor" dot={false} />
+          {/* La linea del umbral, para ver de un vistazo cuando se cruzo. */}
+          {threshold !== null && (
+            <ReferenceLine
+              y={threshold}
+              className="readings-chart-threshold"
+              strokeDasharray="6 4"
+              label={{
+                value: `Umbral ${formatNumber(threshold)} ${unit}`,
+                position: 'insideTopRight',
+                // La etiqueta se dibuja fuera del grupo de la linea, en otra
+                // capa: necesita su propia clase para el color.
+                className: 'readings-chart-threshold-label',
+              }}
+            />
+          )}
+          {/* Sin puntos: con cientos de lecturas taparian la linea. Y sin
+              animacion: con el refresco cada 5 segundos, se dibujaria entera
+              otra vez cada vez. */}
+          <Line type="linear" dataKey="value" name="Valor" dot={false} isAnimationActive={false} />
         </LineChart>
       </ResponsiveContainer>
     </div>

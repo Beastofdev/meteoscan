@@ -1,18 +1,22 @@
 import { useState } from 'react'
 import { Link } from 'react-router'
 import { retireSensor } from '../api.js'
+import { formatNumber, formatTime, isOverThreshold } from '../format.js'
 import { typeLabel, unitSymbol } from '../sensorTypes.js'
 import './SensorCard.css'
 
-// Lo necesario para reconocer un sensor, el enlace a su detalle y su baja. Ni
-// el sensor_id, que a quien mira el panel no le dice nada, ni la fecha de alta,
-// que los requisitos no piden. onRetired avisa de que el sensor ya no esta en
-// servicio.
+// Lo necesario para reconocer un sensor, su ultima lectura, el enlace a su
+// detalle y su baja. Ni el sensor_id, que a quien mira el panel no le dice
+// nada, ni la fecha de alta, que los requisitos no piden. onRetired avisa de
+// que el sensor ya no esta en servicio.
 export default function SensorCard({ sensor, onRetired }) {
   // Cada tarjeta lleva su propia pregunta: confirmar en una no toca las demas.
   const [confirming, setConfirming] = useState(false)
   const [sending, setSending] = useState(false)
   const [error, setError] = useState(null)
+
+  const unit = unitSymbol(sensor.unit)
+  const overThreshold = isOverThreshold(sensor)
 
   async function retire() {
     setSending(true)
@@ -40,14 +44,36 @@ export default function SensorCard({ sensor, onRetired }) {
   }
 
   return (
-    <article className="sensor-card">
+    <article className={overThreshold ? 'sensor-card sensor-card-over' : 'sensor-card'}>
       <h2 className="sensor-card-name">
         <Link to={`/sensores/${sensor.sensor_id}`}>{sensor.name}</Link>
       </h2>
       <p className="sensor-card-type">
-        {typeLabel(sensor.sensor_type)} · {unitSymbol(sensor.unit)}
+        {typeLabel(sensor.sensor_type)} · {unit}
       </p>
       <p className="sensor-card-location">{sensor.location}</p>
+
+      <p className="sensor-card-reading">
+        {sensor.last_reading === null ? (
+          <span className="sensor-card-no-reading">Sin lecturas</span>
+        ) : (
+          <>
+            <span className="sensor-card-value">
+              {formatNumber(sensor.last_reading.value)} {unit}
+            </span>
+            <span className="sensor-card-time">
+              {formatTime(sensor.last_reading.recorded_at)}
+            </span>
+          </>
+        )}
+      </p>
+      {/* El texto, ademas del color: una alerta que solo se ve por el color no
+          la ve todo el mundo. */}
+      {overThreshold && (
+        <p className="sensor-card-over-text">
+          Por encima de {formatNumber(sensor.alert_threshold)} {unit}
+        </p>
+      )}
 
       {error && <p className="sensor-card-error">{error}</p>}
 

@@ -12,3 +12,16 @@
 .readings-chart .recharts-cartesian-axis-tick-value {
   fill: var(--text-muted);
 }
+
+/* La linea del umbral, en el color de las alertas. */
+.readings-chart .readings-chart-threshold line {
+  stroke: var(--alert);
+}
+
+.readings-chart .readings-chart-threshold text {
+  fill: var(--alert);
+}
+
+.readings-chart .readings-chart-threshold-label {
+  fill: var(--alert);
+}

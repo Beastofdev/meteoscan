@@ -29,6 +29,7 @@ cosas está mal, y se ve enseguida.
 | [0016](0016-el-detalle-de-un-sensor.md) | El detalle de un sensor | Una pantalla con su dirección y React Router, las llamadas a la API por `/api`, y el gráfico con recharts |
 | [0017](0017-los-umbrales-de-alerta.md) | Los umbrales de alerta | 35 °C y 35 µg/m³ con su fuente, la humedad sin umbral, y el umbral en el tipo de sensor |
 | [0018](0018-el-ultimo-valor-en-la-lista.md) | El último valor en la lista de sensores | `GET /sensores` trae el umbral y la última lectura de cada sensor, en una consulta |
+| [0019](0019-la-alerta-y-el-refresco.md) | La alerta en el panel, y el refresco | Borde, valor y texto en rojo al pasar del umbral, la línea del umbral en el gráfico, y la pantalla al día cada cinco segundos |
 
 ## Qué merece una decisión aquí
 
