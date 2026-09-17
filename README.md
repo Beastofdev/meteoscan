@@ -118,10 +118,14 @@ Y para arrancarlo:
 npm run dev
 ```
 
-Queda en <http://localhost:5177>. Las peticiones a `/sensores` y `/lecturas`
-las reenvía al 8005, donde escucha la API, así que no hace falta configurar
-nada más ([0012](docs/decisiones/0012-el-panel-con-react.md)). Si el 5177 está
+Queda en <http://localhost:5177>. Lo que el panel pide a `/api` lo reenvía al
+8005, donde escucha la API, quitando el prefijo, así que no hace falta
+configurar nada más ([0012](docs/decisiones/0012-el-panel-con-react.md),
+[0016](docs/decisiones/0016-el-detalle-de-un-sensor.md)). Si el 5177 está
 ocupado, no arranca y lo dice, en vez de mudarse a otro puerto.
+
+El detalle de cada sensor dibuja sus lecturas: sin el simulador en marcha, un
+sensor nuevo no tiene nada que dibujar.
 
 ## Cómo comprobarlo
 

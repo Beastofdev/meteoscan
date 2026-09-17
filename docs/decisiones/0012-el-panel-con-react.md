@@ -1,6 +1,7 @@
 # 0012 · El panel con React y Vite
 
-**Estado:** vigente
+**Estado:** vigente, salvo el proxy: desde la
+[0016](0016-el-detalle-de-un-sensor.md), las llamadas a la API van por `/api`
 **Fecha:** 2026-09-16 · **Decide:** Carlos
 
 ## El problema
@@ -19,8 +20,11 @@ y si hace falta una librería de rutas desde el principio.
 - **El panel en el 5177**, con `strictPort`, y **la API en el 8005**, como
   manda `CONTRIBUTING.md`.
 - **El proxy del servidor de desarrollo**: `/sensores` y `/lecturas` se
-  reenvían a `http://127.0.0.1:8005`. La API no cambia.
-- **Sin librería de rutas** mientras no haya una segunda pantalla.
+  reenvían a `http://127.0.0.1:8005`. La API no cambia. *(Sustituido por la
+  [0016](0016-el-detalle-de-un-sensor.md): el proxy reenvía `/api` y quita el
+  prefijo.)*
+- **Sin librería de rutas** mientras no haya una segunda pantalla. *(Llegó
+  con el detalle: [0016](0016-el-detalle-de-un-sensor.md).)*
 - **El revisor de código que trae la plantilla** (oxlint), con sus reglas de
   hooks de React, sin añadir configuración propia por ahora.
 
@@ -33,7 +37,9 @@ y si hace falta una librería de rutas desde el principio.
   panel, y la API se queda igual de cerrada.
 - **Reescribir la ruta en el proxy** (`/api/sensores` → `/sensores`). Los
   nombres ya coinciden a los dos lados; una reescritura sería una diferencia
-  que memorizar sin ganar nada.
+  que memorizar sin ganar nada. *(Con el detalle sí ganó algo: que las
+  direcciones del panel no choquen con las de la API. Ver la
+  [0016](0016-el-detalle-de-un-sensor.md).)*
 - **El puerto por defecto de Vite (5173)**, ocupado por otro servicio de la
   máquina. Y sin `strictPort`, Vite se muda solo al siguiente puerto libre: un
   panel que aparece en un puerto ajeno es peor que uno que no arranca y lo

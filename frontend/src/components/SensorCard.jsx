@@ -1,11 +1,13 @@
 import { useState } from 'react'
+import { Link } from 'react-router'
 import { retireSensor } from '../api.js'
 import { typeLabel, unitSymbol } from '../sensorTypes.js'
 import './SensorCard.css'
 
-// Lo necesario para reconocer un sensor, y su baja. Ni el sensor_id, que a
-// quien mira el panel no le dice nada, ni la fecha de alta, que los requisitos
-// no piden. onRetired avisa de que el sensor ya no esta en servicio.
+// Lo necesario para reconocer un sensor, el enlace a su detalle y su baja. Ni
+// el sensor_id, que a quien mira el panel no le dice nada, ni la fecha de alta,
+// que los requisitos no piden. onRetired avisa de que el sensor ya no esta en
+// servicio.
 export default function SensorCard({ sensor, onRetired }) {
   // Cada tarjeta lleva su propia pregunta: confirmar en una no toca las demas.
   const [confirming, setConfirming] = useState(false)
@@ -39,7 +41,9 @@ export default function SensorCard({ sensor, onRetired }) {
 
   return (
     <article className="sensor-card">
-      <h2 className="sensor-card-name">{sensor.name}</h2>
+      <h2 className="sensor-card-name">
+        <Link to={`/sensores/${sensor.sensor_id}`}>{sensor.name}</Link>
+      </h2>
       <p className="sensor-card-type">
         {typeLabel(sensor.sensor_type)} · {unitSymbol(sensor.unit)}
       </p>

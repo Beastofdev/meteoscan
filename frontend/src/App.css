@@ -1,5 +1,5 @@
-/* La pantalla: el titulo, el formulario y la lista, uno debajo de otro y con
-   el mismo aire entre ellos. */
+/* La pantalla: el titulo y lo de cada ruta, uno debajo de otro y con el mismo
+   aire entre ellos. */
 .app {
   display: grid;
   gap: 1.5rem;
@@ -7,6 +7,11 @@
 
 .app h1 {
   margin: 0;
+}
+
+.back-link {
+  justify-self: start;
+  color: var(--text);
 }
 
 /* La linea de estado: que ha contestado la API, o por que no se ha podido

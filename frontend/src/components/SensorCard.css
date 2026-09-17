@@ -65,3 +65,15 @@
   opacity: 0.6;
   cursor: progress;
 }
+
+/* El nombre lleva al detalle: se ve como el resto del titulo hasta que se pasa
+   por encima. */
+.sensor-card-name a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.sensor-card-name a:hover,
+.sensor-card-name a:focus-visible {
+  text-decoration: underline;
+}

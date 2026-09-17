@@ -1,0 +1,22 @@
+.sensor-detail {
+  padding: 1rem 1.25rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+}
+
+.sensor-detail-name {
+  margin: 0 0 0.25rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.sensor-detail-meta {
+  margin: 0 0 1rem;
+  color: var(--text-muted);
+}
+
+.sensor-detail-empty {
+  margin: 0;
+  color: var(--text-muted);
+}

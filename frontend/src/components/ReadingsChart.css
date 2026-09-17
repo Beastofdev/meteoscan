@@ -1,0 +1,14 @@
+/* La linea y los textos del grafico, con los colores del panel. recharts los
+   dibuja en SVG y les pone estas clases. */
+.readings-chart {
+  font-size: 0.875rem;
+}
+
+.readings-chart .recharts-line-curve {
+  stroke: var(--text);
+  stroke-width: 1.5;
+}
+
+.readings-chart .recharts-cartesian-axis-tick-value {
+  fill: var(--text-muted);
+}
