@@ -39,6 +39,7 @@ porque al aire libre no hay un límite que citar.
 | Base de datos | PostgreSQL 18, en Docker |
 | Panel | React 19 con Vite, React Router y recharts |
 | Pruebas | `node --test` y SQL para la API y el esquema; Playwright para el panel |
+| Empaquetado | Docker: base, API y panel, con nginx sirviendo el panel |
 | Integración continua | GitHub Actions |
 
 ## Cómo arrancarlo
@@ -56,7 +57,8 @@ Después, cada cosa en su terminal:
 # 1. la base de datos, en el 5438
 docker compose up -d
 
-# 2. el esquema, la primera vez. OJO: vacía las tablas
+# 2. el esquema: la primera vez se carga solo. Esta orden lo vuelve a cargar,
+#    y OJO, vacía las tablas
 docker compose exec -T db psql -U meteoscan -v ON_ERROR_STOP=1 < db/schema.sql
 
 # 3. la API, en el 8005
@@ -70,6 +72,20 @@ cd backend && npm run simular
 ```
 
 Y el panel queda en <http://localhost:5177>.
+
+### O todo junto, con Docker
+
+Si solo quieres verlo funcionando, sin instalar Node ni arrancar nada a mano:
+
+```
+docker compose --profile completo up -d --build
+```
+
+Levanta la base, la API, el panel y el simulador, y el panel queda en el mismo
+sitio, <http://localhost:5177>. Se para con
+`docker compose --profile completo down`. Los dos modos usan los mismos
+puertos, así que no pueden estar a la vez
+([0021](docs/decisiones/0021-docker-para-levantarlo-todo.md)).
 
 Detalles que conviene saber:
 
@@ -102,10 +118,10 @@ mensaje para las personas
 
 ```
 db/                  el esquema y sus pruebas
-backend/             la API con Express y el simulador
-frontend/            el panel con React
+backend/             la API con Express y el simulador, con su Dockerfile
+frontend/            el panel con React, con su Dockerfile y su nginx.conf
 docs/                los requisitos, las decisiones y lo aparcado
-compose.yaml         la base de datos de desarrollo, en Docker
+compose.yaml         la base de datos, y el sistema entero con --profile completo
 .env.example         las variables que hay que copiar a .env
 CONTRIBUTING.md      las normas del proyecto
 check.sh             la única lista de comprobaciones

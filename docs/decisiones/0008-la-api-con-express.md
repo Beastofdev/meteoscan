@@ -29,7 +29,9 @@ sensores», pero un sensor eliminado no se borra: se da de baja.
 2. **Módulos de JavaScript (`import`)**, con `"type": "module"` en
    `package.json`.
 3. **Escucha solo en `127.0.0.1:8005`**, como la base
-   ([0007](0007-la-base-de-desarrollo-en-docker.md)).
+   ([0007](0007-la-base-de-desarrollo-en-docker.md)). *(Sigue siendo lo que
+   hace por defecto; dentro de un contenedor, el compose la pone a `0.0.0.0`:
+   [0021](0021-docker-para-levantarlo-todo.md).)*
 4. **`node --watch` para desarrollar** (`npm run dev`): reinicia la API al
    guardar un fichero.
 

@@ -1,5 +1,10 @@
-# La base de datos de desarrollo. La de las comprobaciones no va aqui: se crea
-# de cero y se destruye en cada pasada (decision 0004).
+# La base de datos de desarrollo, y --- con el perfil "completo" --- el sistema
+# entero: base, API, panel y simulador (decision 0021). La base de las
+# comprobaciones no va aqui: se crea de cero y se destruye en cada pasada
+# (decision 0004).
+#
+#   docker compose up -d                              solo la base
+#   docker compose --profile completo up -d --build   todo
 services:
   db:
     # Se fija la version mayor, que es la que cambia el formato de los datos.
@@ -19,6 +24,62 @@ services:
       # Desde la 18, la imagen guarda los datos en /var/lib/postgresql/18/docker.
       # Un volumen en /var/lib/postgresql/data, como en la 17, los dejaria fuera.
       - pgdata:/var/lib/postgresql
+      # Con el volumen vacio, PostgreSQL ejecuta lo que encuentre aqui: asi la
+      # base queda lista sin pasos extra. Si el volumen ya existe no hace nada,
+      # y recargar el esquema sigue siendo la orden de db/README.md, que ademas
+      # vacia las tablas.
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+    # Para que la API no arranque antes de que la base acepte conexiones.
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U meteoscan -d meteoscan"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  api:
+    profiles: ["completo"]
+    build: ./backend
+    # Con nombre propio, la imagen se construye una vez y la comparte el
+    # simulador, que es el mismo codigo con otra orden.
+    image: meteoscan-api
+    environment:
+      # Dentro de la red de Docker, la base se llama por su nombre de servicio
+      # y por su puerto de dentro, no por el 5438 de la maquina.
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: meteoscan
+      DB_NAME: meteoscan
+      DB_PASSWORD: "${DB_PASSWORD:?copia .env.example a .env y rellenalo}"
+      # Dentro del contenedor, 127.0.0.1 seria "solo yo": nadie llegaria. El
+      # aislamiento lo da Docker, que publica el puerto solo en el 127.0.0.1 de
+      # la maquina (decision 0021).
+      HOST: 0.0.0.0
+    ports:
+      - "127.0.0.1:8005:8005"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  panel:
+    profiles: ["completo"]
+    build: ./frontend
+    image: meteoscan-panel
+    ports:
+      # Dentro sirve nginx en el 80; fuera, el puerto de siempre del panel.
+      - "127.0.0.1:5177:80"
+    depends_on:
+      - api
+
+  simulador:
+    profiles: ["completo"]
+    # La misma imagen que la API, con otra orden: es el mismo codigo.
+    image: meteoscan-api
+    build: ./backend
+    command: ["node", "src/simulator.js"]
+    environment:
+      API_URL: http://api:8005
+    depends_on:
+      - api
 
 volumes:
   pgdata:

@@ -12,6 +12,10 @@
 es lo que se quiere; antes de guardar datos de verdad hacen falta migraciones
 ([`pendiente.md`](../docs/pendiente.md)).
 
+La **primera vez** no hace falta: con la base recién creada, Docker carga este
+mismo fichero solo ([0021](../docs/decisiones/0021-docker-para-levantarlo-todo.md)).
+Esta orden es para volver a empezar de cero cuando ya existe.
+
 Con la base arrancada (`docker compose up -d`) y desde la raíz del proyecto.
 En bash (Linux, macOS o Git Bash):
 

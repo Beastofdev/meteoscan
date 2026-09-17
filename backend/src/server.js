@@ -42,10 +42,16 @@ app.use('/lecturas', readingsRouter);
 app.use(notFound);
 app.use(errorHandler);
 
-// Solo desde este ordenador, como la base de datos (decision 0007).
-app.listen(PORT, '127.0.0.1', (error) => {
+// Solo desde este ordenador, como la base de datos (decision 0007). Dentro de
+// un contenedor esa direccion significa "solo dentro de esta caja", y ni el
+// panel ni la maquina llegarian: de ahi HOST, que el compose pone a 0.0.0.0
+// solo ahi, donde el aislamiento lo da Docker publicando el puerto en el
+// 127.0.0.1 de la maquina (decision 0021).
+const HOST = process.env.HOST ?? '127.0.0.1';
+
+app.listen(PORT, HOST, (error) => {
   // Si no puede escuchar (el puerto ocupado, por ejemplo), Express 5 pasa aqui
   // el error. Sin esta linea diria que escucha sin estar escuchando.
   if (error) throw error;
-  console.log(`API escuchando en http://127.0.0.1:${PORT}`);
+  console.log(`API escuchando en http://${HOST}:${PORT}`);
 });

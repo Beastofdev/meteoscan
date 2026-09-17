@@ -1,6 +1,7 @@
 # 0007 · La base de desarrollo, en Docker
 
-**Estado:** vigente
+**Estado:** vigente; el mismo `compose.yaml` levanta además el sistema entero con
+el perfil `completo` ([0021](0021-docker-para-levantarlo-todo.md))
 **Fecha:** 2026-09-12 · **Decide:** Carlos
 
 ## El problema

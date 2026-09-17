@@ -1,0 +1,5 @@
+# Lo que no tiene que entrar en la imagen. node_modules se instala dentro, con
+# npm ci, para que sea el de Linux y no el de esta maquina.
+node_modules
+test
+check_api.sh
