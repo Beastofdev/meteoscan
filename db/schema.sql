@@ -7,14 +7,22 @@
 -- =====================================================
 -- SENSOR_TYPES
 -- =====================================================
--- Los tipos de sensor, y la unidad en que mide cada uno.
+-- Los tipos de sensor, la unidad en que mide cada uno y, si lo tiene, el umbral
+-- por encima del cual una lectura es una alerta.
 -- Fuente: los tipos, los requisitos y la decision de medir la calidad del aire
 -- como PM2.5 (Carlos, 2026-09-11); las unidades, SenML: RFC 8428 y RFC 8798.
+-- Fuente de los umbrales (Carlos, 2026-09-17, decision 0017): temperatura, los
+-- requisitos (mas de 35 grados); PM2.5, la norma de 24 horas de la EPA
+-- estadounidense (35 ug/m3); humedad, ninguno: no hay un limite con fuente
+-- para la humedad al aire libre.
 DROP TABLE IF EXISTS sensor_types CASCADE;
 CREATE TABLE sensor_types (
-    code        VARCHAR(30)  NOT NULL,
-    unit        VARCHAR(20)  NOT NULL,
-    created_at  TIMESTAMPTZ  NOT NULL DEFAULT now(),
+    code             VARCHAR(30)       NOT NULL,
+    unit             VARCHAR(20)       NOT NULL,
+    -- En la unidad del tipo. Vacio: el tipo no tiene alerta. Una lectura esta
+    -- en alerta si su valor es MAYOR que el umbral; igual, no.
+    alert_threshold  DOUBLE PRECISION,
+    created_at       TIMESTAMPTZ       NOT NULL DEFAULT now(),
 
     -- La clave es el propio codigo ('temperature'), no un numero: un sensor se
     -- lee sin ir a buscar su tipo a esta tabla (decision 0006).
@@ -22,13 +30,17 @@ CREATE TABLE sensor_types (
     -- En minusculas: la clave distingue mayusculas, y sin esto 'Temperature' y
     -- 'temperature' serian dos tipos distintos.
     CONSTRAINT chk_sensor_types_code CHECK (code ~ '^[a-z][a-z0-9_]*$'),
-    CONSTRAINT chk_sensor_types_unit CHECK (btrim(unit) <> '')
+    CONSTRAINT chk_sensor_types_unit CHECK (btrim(unit) <> ''),
+    -- Un numero de verdad, como el valor de una lectura: ni NaN ni infinitos.
+    -- El vacio pasa: un CHECK solo rechaza lo que da falso, y con NULL da nulo.
+    CONSTRAINT chk_sensor_types_alert_threshold
+        CHECK (alert_threshold > '-Infinity' AND alert_threshold < 'Infinity')
 );
 
-INSERT INTO sensor_types (code, unit) VALUES
-    ('temperature', 'Cel'),
-    ('humidity',    '%RH'),
-    ('pm25',        'ug/m3');
+INSERT INTO sensor_types (code, unit, alert_threshold) VALUES
+    ('temperature', 'Cel',   35),
+    ('humidity',    '%RH',   NULL),
+    ('pm25',        'ug/m3', 35);
 
 -- =====================================================
 -- SENSORS

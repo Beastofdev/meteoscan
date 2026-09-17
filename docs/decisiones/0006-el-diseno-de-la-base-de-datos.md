@@ -83,11 +83,14 @@ unidades principales; MeteoScan no envía mensajes SenML, sino que toma de él l
 símbolos, y en microgramos una lectura de PM2.5 es 12 y no 0,000000012. SenML
 desaconseja `%` a secas: allí significa una proporción, no un porcentaje.
 
-| code | unit | Qué es |
-|---|---|---|
-| `temperature` | `Cel` | Grados Celsius |
-| `humidity` | `%RH` | Humedad relativa, en porcentaje |
-| `pm25` | `ug/m3` | Partículas PM2.5, en microgramos por metro cúbico |
+| code | unit | alert_threshold | Qué es |
+|---|---|---|---|
+| `temperature` | `Cel` | 35 | Grados Celsius |
+| `humidity` | `%RH` | — | Humedad relativa, en porcentaje |
+| `pm25` | `ug/m3` | 35 | Partículas PM2.5, en microgramos por metro cúbico |
+
+La columna `alert_threshold` llegó después, con la alerta del panel. Sus
+valores y sus fuentes están en la [0017](0017-los-umbrales-de-alerta.md).
 
 ### El DDL
 

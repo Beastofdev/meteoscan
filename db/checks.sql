@@ -100,6 +100,19 @@ SELECT pg_temp.expect_rejection('sensor_types: codigo de 31 caracteres',
     '22001', NULL);
 SELECT pg_temp.expect_ok('sensor_types: codigo con cifras y guion bajo',
     $$INSERT INTO sensor_types (code, unit) VALUES ('wind_speed_2', 'm/s')$$);
+SELECT pg_temp.expect_ok('sensor_types: con umbral',
+    $$INSERT INTO sensor_types (code, unit, alert_threshold) VALUES ('con_umbral', 'x', 12.5)$$);
+SELECT pg_temp.expect_ok('sensor_types: sin umbral',
+    $$INSERT INTO sensor_types (code, unit) VALUES ('sin_umbral', 'x')$$);
+SELECT pg_temp.expect_rejection('sensor_types: umbral NaN',
+    $$INSERT INTO sensor_types (code, unit, alert_threshold) VALUES ('noise', 'dB', 'NaN')$$,
+    '23514', 'chk_sensor_types_alert_threshold');
+SELECT pg_temp.expect_rejection('sensor_types: umbral Infinity',
+    $$INSERT INTO sensor_types (code, unit, alert_threshold) VALUES ('noise', 'dB', 'Infinity')$$,
+    '23514', 'chk_sensor_types_alert_threshold');
+SELECT pg_temp.expect_rejection('sensor_types: umbral -Infinity',
+    $$INSERT INTO sensor_types (code, unit, alert_threshold) VALUES ('noise', 'dB', '-Infinity')$$,
+    '23514', 'chk_sensor_types_alert_threshold');
 
 -- =====================================================
 -- SENSORS

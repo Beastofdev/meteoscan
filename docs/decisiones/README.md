@@ -27,6 +27,7 @@ cosas está mal, y se ve enseguida.
 | [0014](0014-el-formulario-de-alta.md) | El formulario de alta | Los tipos salen de la lista del panel, campos controlados, y el panel no valida: cada error de la API, bajo su campo |
 | [0015](0015-la-baja-desde-el-panel.md) | La baja desde el panel | Entra aunque no está en las vistas; se confirma en la tarjeta, y un `404` cuenta como baja hecha |
 | [0016](0016-el-detalle-de-un-sensor.md) | El detalle de un sensor | Una pantalla con su dirección y React Router, las llamadas a la API por `/api`, y el gráfico con recharts |
+| [0017](0017-los-umbrales-de-alerta.md) | Los umbrales de alerta | 35 °C y 35 µg/m³ con su fuente, la humedad sin umbral, y el umbral en el tipo de sensor |
 
 ## Qué merece una decisión aquí
 
