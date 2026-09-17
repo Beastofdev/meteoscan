@@ -1,0 +1,22 @@
+/* Las clases llevan delante el nombre del componente: el CSS de Vite es global,
+   y un .name suelto chocaria con el de cualquier otra pantalla. */
+.sensor-card {
+  height: 100%;
+  box-sizing: border-box;
+  padding: 1rem 1.25rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+}
+
+.sensor-card-name {
+  margin: 0 0 0.25rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.sensor-card-type,
+.sensor-card-location {
+  margin: 0;
+  color: var(--text-muted);
+}
