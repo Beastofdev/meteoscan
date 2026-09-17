@@ -27,7 +27,8 @@ fácil de romper sin enterarse.
   confirmación, la alerta —y que la humedad no avisa nunca—, el detalle con el
   gráfico y la vuelta atrás, el refresco solo, y la API caída.
   *(La octava, la de la línea plana, entró con la
-  [0024](0024-el-tramo-en-alerta-del-grafico.md).)*
+  [0024](0024-el-tramo-en-alerta-del-grafico.md); la novena, la del foco, con la
+  [0025](0025-el-foco-va-al-campo-que-falla.md).)*
 - **De una en una** (`workers: 1`), porque comparten una base y una API, igual
   que las de la API con `--test-concurrency=1`.
 - **Al fallar, captura y rastro**; y **un reintento solo en GitHub**, donde una

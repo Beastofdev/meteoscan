@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { createSensor } from '../api.js'
 import { SENSOR_TYPE_CODES, typeLabel } from '../sensorTypes.js'
 import './SensorForm.css'
@@ -15,6 +15,28 @@ export default function SensorForm({ onCreated }) {
   const [sending, setSending] = useState(false)
   const [error, setError] = useState(null)
   const [createdName, setCreatedName] = useState(null)
+
+  // Para poder llevar el foco al campo que la API senale.
+  const nameRef = useRef(null)
+  const typeRef = useRef(null)
+  const locationRef = useRef(null)
+
+  // Al fallar el alta, el foco se va al campo que hay que corregir. Va en un
+  // efecto y no dentro del envio para que llegue cuando el mensaje ya esta
+  // puesto: asi el lector de pantalla lee el motivo junto al campo (0023). Si
+  // el error no es de ningun campo --la API que no contesta-- el foco se queda
+  // donde estaba: no hay adonde llevarlo, y el mensaje ya se anuncia solo.
+  useEffect(() => {
+    if (error === null) return
+    // Un Map y no un objeto: en un objeto, un campo como 'constructor'
+    // encontraria algo que no es una referencia.
+    const fields = new Map([
+      ['name', nameRef],
+      ['sensor_type', typeRef],
+      ['location', locationRef],
+    ])
+    fields.get(error.field)?.current?.focus()
+  }, [error])
 
   async function handleSubmit(event) {
     // Sin esto, el navegador recarga la pagina con los campos en la direccion.
@@ -59,6 +81,7 @@ export default function SensorForm({ onCreated }) {
       <div>
         <input
           id="sensor-name"
+          ref={nameRef}
           aria-invalid={nameError ? true : undefined}
           aria-describedby={nameError ? 'sensor-name-error' : undefined}
           value={name}
@@ -71,6 +94,7 @@ export default function SensorForm({ onCreated }) {
       <div>
         <select
           id="sensor-type"
+          ref={typeRef}
           aria-invalid={typeError ? true : undefined}
           aria-describedby={typeError ? 'sensor-type-error' : undefined}
           value={sensorType}
@@ -90,6 +114,7 @@ export default function SensorForm({ onCreated }) {
       <div>
         <input
           id="sensor-location"
+          ref={locationRef}
           aria-invalid={locationError ? true : undefined}
           aria-describedby={locationError ? 'sensor-location-error' : undefined}
           value={location}

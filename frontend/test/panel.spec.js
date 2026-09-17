@@ -79,6 +79,20 @@ test('el alta crea el sensor, y el nombre repetido da su error bajo el campo', a
     .toHaveValue(nombre);
 });
 
+test('cuando el alta falla, el foco se va al campo que hay que corregir', async ({ page, request }) => {
+  const sensor = await createSensor(request);
+
+  await page.goto('/');
+  await page.getByLabel('Nombre').fill(sensor.name);
+  await page.getByLabel('Tipo').selectOption('temperature');
+  await page.getByLabel('Ubicación').fill('Nave 2');
+  await page.locator('.sensor-form button').click();
+
+  // Quien envia deja el foco en el boton: sin esto habria que buscar a tientas
+  // cual de los tres campos es el que falla (0025).
+  await expect(page.getByLabel('Nombre')).toBeFocused();
+});
+
 test('la baja pregunta antes, y la tarjeta desaparece', async ({ page, request }) => {
   const sensor = await createSensor(request);
   await page.goto('/');

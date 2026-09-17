@@ -17,7 +17,7 @@ dibuja el histórico de cada uno y avisa cuando un valor pasa de su umbral.
 | `src/format.js` | Números, horas y cuándo un sensor está en alerta |
 | `src/sensorTypes.js` | Los códigos de la API traducidos: `temperature` → «Temperatura» |
 | `src/index.css` | Las variables del sistema visual: color, letra, espaciado y radios. Cada pieza tiene además su propio fichero de estilos |
-| `test/panel.spec.js` | Las 8 pruebas, en un navegador de verdad |
+| `test/panel.spec.js` | Las 9 pruebas, en un navegador de verdad |
 | `check_panel.sh` | Las levanta contra la API y el panel compilado |
 | `check_types.mjs` | Comprueba que los tipos de aquí son los de la base |
 | `public/favicon.svg` | El icono de la pestaña. Lo que hay en `public/` se copia tal cual al compilar |

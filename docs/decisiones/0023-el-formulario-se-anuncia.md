@@ -53,6 +53,8 @@ estilos. Esta lo cierra.
   razonable de accesibilidad y no entra aquí: mover el foco por su cuenta es una
   decisión con más aristas —dónde lo devuelves, qué pasa si hay dos errores— que
   merece pensarse aparte.
+  *(Hecho en la [0025](0025-el-foco-va-al-campo-que-falla.md). De las dos
+  aristas, la de los dos errores no existía: el formulario guarda uno solo.)*
 
 ## Dónde vive en el código
 
