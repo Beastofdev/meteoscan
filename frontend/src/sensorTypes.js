@@ -6,6 +6,10 @@
 // base se ve feo hasta que se anade, pero no rompe el panel. Map y no un objeto
 // literal: en un objeto, un codigo como 'constructor' encontraria algo que no
 // es una traduccion.
+//
+// Es tambien la lista del desplegable del alta (0014). Si se queda atras de la
+// base, al formulario le falta una opcion; lo que no puede es crear un sensor
+// de un tipo que no existe, porque la base lo rechaza.
 
 const TYPE_LABELS = new Map([
   ['temperature', 'Temperatura'],
@@ -18,6 +22,8 @@ const UNIT_SYMBOLS = new Map([
   ['%RH', '% HR'],
   ['ug/m3', 'µg/m³'],
 ])
+
+export const SENSOR_TYPE_CODES = [...TYPE_LABELS.keys()]
 
 export function typeLabel(code) {
   return TYPE_LABELS.get(code) ?? code

@@ -59,8 +59,8 @@ vive esa conversación antes de que haya tres copias.
 
 - **Los tipos están en dos sitios**: en la base y en `sensorTypes.js`. Un tipo
   nuevo necesita su traducción; sin ella se ve su código, pero el panel no se
-  rompe. De dónde saca el formulario de alta la lista de tipos sigue abierto en
-  [`pendiente.md`](../pendiente.md).
+  rompe. El desplegable del alta usa la misma lista
+  ([0014](0014-el-formulario-de-alta.md)).
 - **La lista no se actualiza sola**: se pide al abrir el panel. Un sensor dado de
   alta desde otro sitio no aparece hasta recargar.
 - **El prefijo de las clases es una costumbre, no una garantía**: nada impide que

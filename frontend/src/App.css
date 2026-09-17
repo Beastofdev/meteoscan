@@ -1,5 +1,16 @@
-/* La pantalla del panel. Por ahora solo la linea de estado: que ha contestado
-   la API, o por que no se ha podido preguntar. */
+/* La pantalla: el titulo, el formulario y la lista, uno debajo de otro y con
+   el mismo aire entre ellos. */
+.app {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.app h1 {
+  margin: 0;
+}
+
+/* La linea de estado: que ha contestado la API, o por que no se ha podido
+   preguntar. */
 .status {
   margin: 0;
   padding: 1rem 1.25rem;

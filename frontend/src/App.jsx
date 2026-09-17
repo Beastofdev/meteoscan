@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { getSensors } from './api.js'
+import SensorForm from './components/SensorForm.jsx'
 import SensorList from './components/SensorList.jsx'
 import './App.css'
 
@@ -7,6 +8,8 @@ export default function App() {
   // null mientras no hay respuesta; un array en cuanto la API contesta.
   const [sensors, setSensors] = useState(null)
   const [error, setError] = useState(null)
+  // Cada vez que sube, la lista se vuelve a pedir: es lo que hace el alta.
+  const [listVersion, setListVersion] = useState(0)
 
   useEffect(() => {
     // Si el componente desaparece antes de que llegue la respuesta, se
@@ -15,7 +18,9 @@ export default function App() {
     let ignore = false
     getSensors()
       .then((data) => {
-        if (!ignore) setSensors(data)
+        if (ignore) return
+        setSensors(data)
+        setError(null)
       })
       .catch((failure) => {
         if (!ignore) setError(failure.message)
@@ -23,11 +28,12 @@ export default function App() {
     return () => {
       ignore = true
     }
-  }, [])
+  }, [listVersion])
 
   return (
-    <main>
+    <main className="app">
       <h1>MeteoScan</h1>
+      <SensorForm onCreated={() => setListVersion((version) => version + 1)} />
       <Content sensors={sensors} error={error} />
     </main>
   )

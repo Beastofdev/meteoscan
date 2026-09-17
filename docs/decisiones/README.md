@@ -24,6 +24,7 @@ cosas está mal, y se ve enseguida.
 | [0011](0011-las-pruebas-de-la-api.md) | Las pruebas de la API | `node --test` sin librerías, sobre un PostgreSQL de usar y tirar y la API en marcha |
 | [0012](0012-el-panel-con-react.md) | El panel con React y Vite | React 19 con Vite en el 5177, y un proxy al 8005 en vez de abrir CORS en la API |
 | [0013](0013-la-lista-de-sensores.md) | La lista de sensores | Tarjetas, las llamadas a la API en un solo fichero, y los códigos del tipo y la unidad traducidos en el panel |
+| [0014](0014-el-formulario-de-alta.md) | El formulario de alta | Los tipos salen de la lista del panel, campos controlados, y el panel no valida: cada error de la API, bajo su campo |
 
 ## Qué merece una decisión aquí
 
