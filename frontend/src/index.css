@@ -1,17 +1,17 @@
 /* Lo comun a todo el panel: tipografia, colores y el ancho de la pagina. Lo
    de cada pantalla vive en su propio fichero de estilos. */
 :root {
-  --texto: #1f2933;
-  --texto-suave: #52606d;
-  --fondo: #f5f7fa;
-  --fondo-caja: #ffffff;
-  --borde: #d9e2ec;
-  --alerta: #b4232a;
+  --text: #1f2933;
+  --text-muted: #52606d;
+  --background: #f5f7fa;
+  --surface: #ffffff;
+  --border: #d9e2ec;
+  --alert: #b4232a;
 
   font-family: system-ui, "Segoe UI", Roboto, sans-serif;
   line-height: 1.5;
-  color: var(--texto);
-  background: var(--fondo);
+  color: var(--text);
+  background: var(--background);
 }
 
 body {
