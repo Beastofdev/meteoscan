@@ -27,8 +27,17 @@ pasa de su umbral.
   ([0006](docs/decisiones/0006-el-diseno-de-la-base-de-datos.md)), PostgreSQL en
   Docker ([0007](docs/decisiones/0007-la-base-de-desarrollo-en-docker.md)) y
   sus pruebas en [`db/checks.sql`](db/checks.sql)
-- [ ] **Paso 2** — API con Express, y el simulador de sensores
+- [x] **Paso 2** — API con Express: las cinco rutas de la especificación y
+  `GET /health` ([0008](docs/decisiones/0008-la-api-con-express.md)), sus
+  errores ([0009](docs/decisiones/0009-los-errores-de-la-api.md)), el simulador
+  de sensores ([0010](docs/decisiones/0010-el-simulador.md)) y las pruebas de la
+  API ([0011](docs/decisiones/0011-las-pruebas-de-la-api.md))
 - [ ] **Paso 3** — panel con React
+  ([0012](docs/decisiones/0012-el-panel-con-react.md)): hechos la lista, el
+  alta, la baja y el detalle con el gráfico
+  ([0013](docs/decisiones/0013-la-lista-de-sensores.md) a
+  [0016](docs/decisiones/0016-el-detalle-de-un-sensor.md)); falta la alerta del
+  umbral
 - [ ] README final
 
 ## Cómo está organizado
