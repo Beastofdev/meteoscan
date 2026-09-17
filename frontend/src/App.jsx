@@ -8,7 +8,7 @@ export default function App() {
   // null mientras no hay respuesta; un array en cuanto la API contesta.
   const [sensors, setSensors] = useState(null)
   const [error, setError] = useState(null)
-  // Cada vez que sube, la lista se vuelve a pedir: es lo que hace el alta.
+  // Cada vez que sube, la lista se vuelve a pedir: tras un alta o una baja.
   const [listVersion, setListVersion] = useState(0)
 
   useEffect(() => {
@@ -30,11 +30,13 @@ export default function App() {
     }
   }, [listVersion])
 
+  const refreshList = () => setListVersion((version) => version + 1)
+
   return (
     <main className="app">
       <h1>MeteoScan</h1>
-      <SensorForm onCreated={() => setListVersion((version) => version + 1)} />
-      <Content sensors={sensors} error={error} />
+      <SensorForm onCreated={refreshList} />
+      <Content sensors={sensors} error={error} onRetired={refreshList} />
     </main>
   )
 }
@@ -42,11 +44,11 @@ export default function App() {
 // Los tres momentos de cualquier pantalla que depende de un servidor —no ha
 // contestado, ha fallado, o ha contestado—, y un cuarto: ha contestado que no
 // hay nada.
-function Content({ sensors, error }) {
+function Content({ sensors, error, onRetired }) {
   if (error) return <p className="status status-error">{error}</p>
   if (sensors === null) return <p className="status">Consultando la API…</p>
   if (sensors.length === 0) {
     return <p className="status">No hay ningún sensor en servicio.</p>
   }
-  return <SensorList sensors={sensors} />
+  return <SensorList sensors={sensors} onRetired={onRetired} />
 }

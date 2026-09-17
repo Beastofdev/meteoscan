@@ -27,6 +27,12 @@ export function createSensor({ name, sensor_type, location }) {
   })
 }
 
+// Da de baja un sensor. Un 404 llega como ApiError: el sensor no existe o ya
+// estaba de baja.
+export function retireSensor(sensorId) {
+  return request(`/sensores/${encodeURIComponent(sensorId)}`, { method: 'DELETE' })
+}
+
 async function request(path, options) {
   let response
   try {
@@ -35,6 +41,9 @@ async function request(path, options) {
     // fetch solo falla sin respuesta: el servidor del panel no esta, o no hay red.
     throw new ApiError(0, 'network_error', 'No se pudo conectar con la API.')
   }
+  // 204 No Content: no hay cuerpo, y response.json() fallaria aunque todo
+  // haya ido bien.
+  if (response.status === 204) return null
   if (response.ok) return response.json()
   throw await toApiError(response)
 }
