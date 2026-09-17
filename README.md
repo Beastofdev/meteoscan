@@ -157,3 +157,8 @@ los umbrales y su fuente, y cómo se comprueba todo.
 
 Las normas del repositorio —el esquema, la API, los commits, el idioma— están en
 [`CONTRIBUTING.md`](CONTRIBUTING.md).
+
+## Licencia
+
+MIT: se puede usar, copiar y modificar, citando al autor y sin garantía. El
+texto, en [`LICENSE`](LICENSE).
