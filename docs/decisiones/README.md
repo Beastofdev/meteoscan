@@ -32,6 +32,7 @@ cosas está mal, y se ve enseguida.
 | [0019](0019-la-alerta-y-el-refresco.md) | La alerta en el panel, y el refresco | Borde, valor y texto en rojo al pasar del umbral, la línea del umbral en el gráfico, y la pantalla al día cada cinco segundos |
 | [0020](0020-las-pruebas-del-panel.md) | Las pruebas del panel | Playwright contra la aplicación entera, solo Chromium, y los fallos que no se pueden provocar, simulados |
 | [0021](0021-docker-para-levantarlo-todo.md) | Docker para levantarlo todo | Un perfil levanta base, API, panel y simulador; nginx sirve el panel y reenvía `/api` |
+| [0022](0022-el-sistema-visual-del-panel.md) | El sistema visual del panel | Color medido, seis pasos de letra, espaciado de 4 en 4, foco visible y la alerta con cuatro señales, todo en CSS |
 
 ## Si solo vas a leer cinco
 

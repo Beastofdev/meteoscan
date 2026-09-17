@@ -1,7 +1,7 @@
 /* La linea y los textos del grafico, con los colores del panel. recharts los
    dibuja en SVG y les pone estas clases. */
 .readings-chart {
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
 }
 
 .readings-chart .recharts-line-curve {
@@ -11,6 +11,19 @@
 
 .readings-chart .recharts-cartesian-axis-tick-value {
   fill: var(--text-muted);
+  font-size: var(--text-xs);
+}
+
+/* La rejilla, del color de los bordes: situa el dato sin competir con la linea.
+   Los ejes van un tono mas oscuro porque son los que hay que seguir para leer
+   una hora o un valor. */
+.readings-chart .recharts-cartesian-grid line {
+  stroke: var(--border);
+}
+
+.readings-chart .recharts-cartesian-axis-line,
+.readings-chart .recharts-cartesian-axis-tick-line {
+  stroke: var(--text-muted);
 }
 
 /* La linea del umbral, en el color de las alertas. */

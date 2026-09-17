@@ -1,8 +1,8 @@
-/* La pantalla: el titulo y lo de cada ruta, uno debajo de otro y con el mismo
-   aire entre ellos. */
+/* La pantalla: el titulo y lo de cada ruta, uno debajo de otro. El hueco es el
+   paso grande de la escala, el que separa bloques de pantalla. */
 .app {
   display: grid;
-  gap: 1.5rem;
+  gap: var(--space-8);
 }
 
 .app h1 {
@@ -18,16 +18,23 @@
    preguntar. */
 .status {
   margin: 0;
-  padding: 1rem 1.25rem;
+  padding: var(--space-4) var(--space-5);
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 0.5rem;
+  border-radius: var(--radius-card);
   color: var(--text-muted);
 }
 
-/* Cuando la API no contesta, el aviso se ve distinto: mismo sitio, otro color
-   y un borde que llama la atencion. */
+/* Cuando la API no contesta, el aviso se ve distinto: mismo sitio, otro color,
+   un borde que llama la atencion y el triangulo que marca las alertas en todo
+   el panel. Va escrito en hexadecimal para que el fichero siga siendo ASCII y
+   ninguna herramienta lo estropee por el camino. */
 .status-error {
   color: var(--alert);
   border-color: var(--alert);
+  font-weight: 600;
+}
+
+.status-error::before {
+  content: "\25B2\00A0";
 }

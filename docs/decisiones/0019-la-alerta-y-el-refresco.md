@@ -19,6 +19,9 @@ los datos una vez, al abrirse.
   la hora en que se midió. Sin lecturas, «Sin lecturas».
 - **Por encima del umbral**: el borde de la tarjeta y el valor en rojo, **y un
   texto**, «Por encima de 35 °C».
+  *(El aspecto de esas señales —el texto pasó a ser una píldora, y se le añadió
+  un triángulo— lo detalla la
+  [0022](0022-el-sistema-visual-del-panel.md).)*
 - **El detalle, igual**, y además **una línea horizontal discontinua en el
   umbral**, con su etiqueta, dentro del gráfico.
 - **Un tipo sin umbral nunca está en alerta**, y su gráfico no lleva línea.

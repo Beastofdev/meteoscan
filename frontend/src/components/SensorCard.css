@@ -5,15 +5,15 @@
   flex-direction: column;
   height: 100%;
   box-sizing: border-box;
-  padding: 1rem 1.25rem;
+  padding: var(--space-4) var(--space-5);
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 0.5rem;
+  border-radius: var(--radius-card);
 }
 
 .sensor-card-name {
-  margin: 0 0 0.25rem;
-  font-size: 1.125rem;
+  margin: 0 0 var(--space-1);
+  font-size: var(--text-lg);
   font-weight: 600;
 }
 
@@ -23,9 +23,18 @@
   color: var(--text-muted);
 }
 
+/* Todo lo que va mal lleva el mismo triangulo, aqui y en el formulario: el
+   mismo signo significa lo mismo en todo el panel. Escrito en hexadecimal para
+   que el fichero siga siendo ASCII. */
 .sensor-card-error {
-  margin: 0.75rem 0 0;
+  margin: var(--space-3) 0 0;
+  font-size: var(--text-sm);
+  font-weight: 600;
   color: var(--alert);
+}
+
+.sensor-card-error::before {
+  content: "\25B2\00A0";
 }
 
 /* Los botones, abajo del todo aunque la tarjeta sea mas alta que su contenido:
@@ -35,24 +44,32 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: flex-end;
-  gap: 0.5rem;
+  gap: var(--space-2);
   margin-top: auto;
-  padding-top: 0.75rem;
+  padding-top: var(--space-3);
 }
 
 .sensor-card-question {
   flex-basis: 100%;
   margin: 0;
+  font-size: var(--text-sm);
 }
 
 .sensor-card button {
-  padding: 0.3rem 0.75rem;
+  padding: var(--space-2) var(--space-3);
   font: inherit;
+  font-size: var(--text-sm);
   color: var(--text);
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 0.375rem;
+  border-radius: var(--radius-control);
   cursor: pointer;
+}
+
+/* Al pasar por encima solo se oscurece el borde: el boton no cambia de sitio ni
+   de tamano, que es lo que haria fallar un clic. */
+.sensor-card button:hover:not(:disabled) {
+  border-color: var(--text-muted);
 }
 
 .sensor-card .sensor-card-confirm {
@@ -80,15 +97,18 @@
 
 /* La ultima lectura: el valor, grande, y su hora al lado. */
 .sensor-card-reading {
-  margin: 0.75rem 0 0;
+  margin: var(--space-3) 0 0;
   display: flex;
   align-items: baseline;
-  gap: 0.5rem;
+  gap: var(--space-2);
 }
 
+/* Cifras de ancho fijo. La lista se refresca cada cinco segundos, y con las
+   cifras normales el valor se movia en cada cambio: el 1 es mas estrecho. */
 .sensor-card-value {
-  font-size: 1.5rem;
+  font-size: var(--text-xl);
   font-weight: 600;
+  font-variant-numeric: tabular-nums;
 }
 
 .sensor-card-time,
@@ -96,18 +116,33 @@
   color: var(--text-muted);
 }
 
-/* Por encima del umbral: el borde, el valor y un texto. El texto es lo que hace
-   que la alerta no dependa solo del color. */
+.sensor-card-time {
+  font-size: var(--text-sm);
+}
+
+/* Por encima del umbral: el borde, el valor en rojo, una pildora con el limite
+   y el triangulo. Cuatro senales, y ninguna de ellas es solo el color. */
 .sensor-card-over {
   border-color: var(--alert);
 }
 
-.sensor-card-over .sensor-card-value,
-.sensor-card-over-text {
+.sensor-card-over .sensor-card-value {
   color: var(--alert);
 }
 
+/* La pildora se ajusta a su texto y no al ancho de la tarjeta. Va en minusculas
+   a proposito: en mayusculas, las unidades dejan de ser las unidades. */
 .sensor-card-over-text {
-  margin: 0.25rem 0 0;
+  align-self: flex-start;
+  margin: var(--space-2) 0 0;
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--text-xs);
   font-weight: 600;
+  color: var(--alert);
+  border: 1px solid var(--alert);
+  border-radius: var(--radius-pill);
+}
+
+.sensor-card-over-text::before {
+  content: "\25B2\00A0";
 }

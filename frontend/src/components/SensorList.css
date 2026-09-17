@@ -1,9 +1,10 @@
 /* Tantas columnas como quepan, cada una de al menos 16rem: en un movil queda
-   una, y en una pantalla ancha, tres. */
+   una, y en una pantalla ancha, tres. El hueco es el de la rejilla de tarjetas,
+   un paso mayor que el aire de dentro para que se vean como piezas sueltas. */
 .sensor-list {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
-  gap: 1rem;
+  gap: var(--space-5);
   margin: 0;
   padding: 0;
   list-style: none;
