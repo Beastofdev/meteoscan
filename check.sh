@@ -39,6 +39,11 @@ run_check "la documentacion" node docs/check_docs.mjs
 # ficheros: ni Docker, ni dependencias instaladas.
 run_check "los tipos del panel" node frontend/check_types.mjs
 
+# El compose, solo leyendolo: no construye ni levanta nada (decision 0021). La
+# clave es de mentira porque el fichero exige que exista, y en GitHub no hay
+# .env; aqui solo se comprueba que el fichero se entiende.
+run_check "el compose" env DB_PASSWORD=comprobacion docker compose --profile completo config --services
+
 # El esquema, sobre un PostgreSQL de usar y tirar en el 5439 (decision 0004).
 # Hace falta Docker en marcha.
 run_check "el esquema" bash db/check_all.sh

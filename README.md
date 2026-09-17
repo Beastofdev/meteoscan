@@ -135,10 +135,11 @@ check.sh             la única lista de comprobaciones
 bash check.sh
 ```
 
-Cinco comprobaciones: **la documentación** (enlaces y decisiones), **los tipos
-del panel** (que son los mismos que los de la base), **el esquema** (42
-pruebas), **la API** (25 pruebas) y **el panel** (7 pruebas en un navegador de
-verdad, contra la API y el panel compilado:
+Seis comprobaciones: **la documentación** (enlaces y decisiones), **los tipos
+del panel** (que son los mismos que los de la base), **el `compose.yaml`** (que
+se entiende, sin construir ni levantar nada), **el esquema** (42 pruebas), **la
+API** (25 pruebas) y **el panel** (7 pruebas en un navegador de verdad, contra
+la API y el panel compilado:
 [0020](docs/decisiones/0020-las-pruebas-del-panel.md)).
 
 Las tres últimas necesitan **Docker en marcha**: corren sobre un PostgreSQL de

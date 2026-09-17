@@ -53,7 +53,9 @@ publicarlo, eso lo tiene que hacer alguien.
 - **Puertos nuevos para el modo Docker.** La tabla de `CONTRIBUTING.md` no tiene
   libres, y cada puerto nuevo es un choque en potencia con otro proyecto.
 - **Construir las imágenes en `check.sh` y en GitHub.** Son minutos en cada
-  pasada para algo que cambia poco.
+  pasada para algo que cambia poco. En su lugar, una comprobación que solo lee
+  el `compose.yaml` y lista los servicios que entiende: falla si el fichero está
+  roto, sin construir ni levantar nada.
 
 ## Lo que cuesta
 
@@ -64,7 +66,9 @@ publicarlo, eso lo tiene que hacer alguien.
 - **Espacio**: la imagen de la API ocupa 248 MB y la del panel, 103 MB. La API y
   el simulador comparten la suya.
 - **Las imágenes no se comprueban solas**: nada avisa si un `Dockerfile` deja de
-  construir, porque no entra en `check.sh`.
+  construir, porque construirlas en cada pasada son minutos. Lo que sí se
+  comprueba, y cuesta un segundo, es que el `compose.yaml` se entienda: está en
+  `check.sh`.
 - **La 0008 gana una excepción**: la API ya no escucha siempre en `127.0.0.1`,
   aunque sigue siendo lo que hace por defecto.
 
@@ -77,3 +81,4 @@ publicarlo, eso lo tiene que hacer alguien.
 - `frontend/Dockerfile`, `frontend/nginx.conf` y `frontend/.dockerignore` — el
   panel compilado y servido por nginx.
 - `backend/src/server.js` — `HOST`, con `127.0.0.1` por defecto.
+- `check.sh` — la comprobación de que el `compose.yaml` se entiende.
