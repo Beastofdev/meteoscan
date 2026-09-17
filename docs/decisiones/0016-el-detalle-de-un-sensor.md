@@ -38,6 +38,8 @@ panel.
   minutos si cubren un día o menos, y también el día si cubren más.
 - **Sin refresco automático**: el detalle pide las lecturas al abrirse. Cada
   cuánto se refresca la pantalla se decide con la alerta del umbral.
+  *(Decidido en la [0019](0019-la-alerta-y-el-refresco.md): cada cinco
+  segundos, tanto la lista como el detalle.)*
 
 ## Lo que se descartó, y por qué
 
@@ -69,23 +71,27 @@ panel.
 
 ## Lo que cuesta
 
-- **El panel pesa más**: el JavaScript pasa de 221 kB (69 kB comprimido) a
+- **El panel pesa más**: el JavaScript pasó de 221 kB (69 kB comprimido) a
   617 kB (184 kB), casi todo por recharts, que trae dentro otras librerías.
-  Vite avisa al compilar de que pasa de 500 kB. Si llegara a importar, el
-  detalle se podría cargar solo al abrirlo.
+  *(Resuelto después: el detalle se carga solo al abrirlo, con `lazy` y
+  `Suspense` en `App.jsx`. Quien abre la lista descarga 264 kB (83
+  comprimido), y los 359 kB (103) del gráfico solo llegan si entra en un
+  sensor. A cambio, abrir el detalle pide un fichero más, y en una red lenta se
+  ve un «Cargando…» un instante.)*
 - **La 0012 cambia en un punto**: descartó reescribir la ruta en el proxy
   porque no ganaba nada, y ahora gana que panel y API no compartan direcciones.
 - **Al publicar el panel**, el servidor que lo sirva tendrá que hacer dos cosas
   que hoy hace Vite: pasar `/api` a la API y devolver el panel en cualquier otra
   dirección, para que recargar `/sensores/<id>` funcione.
 - **El detalle pide la lista entera** para encontrar un sensor.
-- **Las lecturas no se actualizan solas**, y el eje muestra el tramo que cubren
-  las últimas mil, sea el que sea: el tramo a pedir sigue en
-  [`pendiente.md`](../pendiente.md).
+- **El eje muestra el tramo que cubren las últimas mil lecturas**, sea el que
+  sea: pedir otro tramo sigue en [`pendiente.md`](../pendiente.md). *(Lo de que
+  no se actualizaban solas dejó de ser verdad con la
+  [0019](0019-la-alerta-y-el-refresco.md).)*
 
 ## Dónde vive en el código
 
-- `frontend/src/App.jsx` — las rutas.
+- `frontend/src/App.jsx` — las rutas, y el detalle cargado aparte.
 - `frontend/src/main.jsx` — `<BrowserRouter>`.
 - `frontend/src/pages/SensorDetailPage.jsx` — el detalle, sus datos y sus
   estados.
