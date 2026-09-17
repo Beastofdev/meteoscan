@@ -26,6 +26,8 @@ fácil de romper sin enterarse.
 - **Siete pruebas**: la lista, el alta con su error repetido, la baja con su
   confirmación, la alerta —y que la humedad no avisa nunca—, el detalle con el
   gráfico y la vuelta atrás, el refresco solo, y la API caída.
+  *(La octava, la de la línea plana, entró con la
+  [0024](0024-el-tramo-en-alerta-del-grafico.md).)*
 - **De una en una** (`workers: 1`), porque comparten una base y una API, igual
   que las de la API con `--test-concurrency=1`.
 - **Al fallar, captura y rastro**; y **un reintento solo en GitHub**, donde una
@@ -64,7 +66,7 @@ fácil de romper sin enterarse.
 
 - `frontend/playwright.config.js` — el navegador, el panel compilado y qué se
   guarda cuando algo falla.
-- `frontend/test/panel.spec.js` — las siete pruebas.
+- `frontend/test/panel.spec.js` — las pruebas.
 - `frontend/check_panel.sh` — levanta la base, la API y el panel, y lo destruye
   todo al acabar.
 - `check.sh` y `.github/workflows/checks.yml` — la línea que las mete en la

@@ -4,9 +4,25 @@
   font-size: var(--text-sm);
 }
 
+/* El color de la linea NO se pone aqui: sale del degradado que arma el
+   componente (0024), y una regla de CSS le ganaria al atributo del SVG y lo
+   dejaria sin efecto. Aqui solo van el grosor y los colores de sus dos paradas.
+   */
 .readings-chart .recharts-line-curve {
-  stroke: var(--text);
   stroke-width: 1.5;
+}
+
+.readings-chart-stop-over {
+  stop-color: var(--alert);
+}
+
+.readings-chart-stop-under {
+  stop-color: var(--text);
+}
+
+/* Todas las lecturas iguales: sin degradado posible, y el color vuelve al CSS. */
+.readings-chart-flat .recharts-line-curve {
+  stroke: var(--text);
 }
 
 .readings-chart .recharts-cartesian-axis-tick-value {

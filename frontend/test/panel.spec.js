@@ -124,8 +124,35 @@ test('el detalle dibuja el grafico con la linea del umbral, y se vuelve a la lis
   await expect(page.locator('.readings-chart-threshold')).toHaveCount(1);
   await expect(page.locator('.sensor-detail-value')).toHaveText('38 °C');
 
+  // El tramo que pasa del umbral, en rojo: la linea se pinta con el degradado
+  // y no con un color plano (0024).
+  await expect(page.locator('.recharts-line-curve'))
+    .toHaveAttribute('stroke', /^url\(#readings-chart-/);
+  await expect(page.locator('.readings-chart-stop-over'))
+    .toHaveCSS('stop-color', 'rgb(180, 35, 42)');
+
   await page.goBack();
   await expect(card(page, sensor.name)).toBeVisible();
+});
+
+test('con todas las lecturas iguales, la linea se sigue viendo', async ({ page, request }) => {
+  const sensor = await createSensor(request, { sensor_type: 'temperature' });
+  for (const segundos of [30, 20, 10]) {
+    await sendReading(request, sensor, 21, segundos);
+  }
+
+  await page.goto('/');
+  await card(page, sensor.name).getByRole('link', { name: sensor.name }).click();
+
+  // Una linea plana no tiene alto, y un degradado medido sobre su caja la
+  // dejaria sin dibujar: ese caso se pinta desde el CSS (0024). No se usa
+  // toBeVisible porque Playwright da por no visible todo lo que mide cero de
+  // alto, y una linea horizontal lo mide: lo que prueba que se ve es con que
+  // color se pinta.
+  const linea = page.locator('.recharts-line-curve');
+  await expect(linea).toHaveCount(1);
+  await expect(linea).not.toHaveAttribute('stroke', /url/);
+  await expect(linea).toHaveCSS('stroke', 'rgb(31, 41, 51)');
 });
 
 test('una lectura nueva aparece sola, sin recargar la pagina', async ({ page, request }) => {

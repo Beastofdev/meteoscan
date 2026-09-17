@@ -142,7 +142,7 @@ bash check.sh
 Seis comprobaciones: **la documentación** (enlaces y decisiones), **los tipos
 del panel** (que son los mismos que los de la base), **el `compose.yaml`** (que
 se entiende, sin construir ni levantar nada), **el esquema** (42 pruebas), **la
-API** (25 pruebas) y **el panel** (7 pruebas en un navegador de verdad, contra
+API** (25 pruebas) y **el panel** (8 pruebas en un navegador de verdad, contra
 la API y el panel compilado:
 [0020](docs/decisiones/0020-las-pruebas-del-panel.md)).
 

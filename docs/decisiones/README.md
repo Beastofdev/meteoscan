@@ -33,6 +33,8 @@ cosas está mal, y se ve enseguida.
 | [0020](0020-las-pruebas-del-panel.md) | Las pruebas del panel | Playwright contra la aplicación entera, solo Chromium, y los fallos que no se pueden provocar, simulados |
 | [0021](0021-docker-para-levantarlo-todo.md) | Docker para levantarlo todo | Un perfil levanta base, API, panel y simulador; nginx sirve el panel y reenvía `/api` |
 | [0022](0022-el-sistema-visual-del-panel.md) | El sistema visual del panel | Color medido, seis pasos de letra, espaciado de 4 en 4, foco visible y la alerta con cuatro señales, todo en CSS |
+| [0023](0023-el-formulario-se-anuncia.md) | El formulario se anuncia | `aria-invalid` y `aria-describedby` en el campo que falla, el mensaje con `role="alert"`, y el rojo colgado de ese mismo atributo |
+| [0024](0024-el-tramo-en-alerta-del-grafico.md) | El tramo en alerta del gráfico | La línea cambia de color al cruzar el umbral con un degradado de dos paradas, sin partir la serie |
 
 ## Si solo vas a leer cinco
 

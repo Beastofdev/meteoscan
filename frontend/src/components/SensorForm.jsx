@@ -39,27 +39,40 @@ export default function SensorForm({ onCreated }) {
 
   const errorFor = (field) => (error?.field === field ? error.message : null)
   const generalError = error && !FIELDS.includes(error.field) ? error.message : null
+  // El error de cada campo se usa tres veces: para pintarlo de rojo, para
+  // anunciarlo al lector de pantalla y para escribirlo debajo.
+  const nameError = errorFor('name')
+  const typeError = errorFor('sensor_type')
+  const locationError = errorFor('location')
 
   return (
     <form className="sensor-form" onSubmit={handleSubmit}>
       <h2 className="sensor-form-title">Dar de alta un sensor</h2>
 
-      {generalError && <p className="sensor-form-error">{generalError}</p>}
+      {generalError && (
+        <p className="sensor-form-error" role="alert">
+          {generalError}
+        </p>
+      )}
 
       <label htmlFor="sensor-name">Nombre</label>
       <div>
         <input
           id="sensor-name"
+          aria-invalid={nameError ? true : undefined}
+          aria-describedby={nameError ? 'sensor-name-error' : undefined}
           value={name}
           onChange={(event) => setName(event.target.value)}
         />
-        <FieldError message={errorFor('name')} />
+        <FieldError id="sensor-name-error" message={nameError} />
       </div>
 
       <label htmlFor="sensor-type">Tipo</label>
       <div>
         <select
           id="sensor-type"
+          aria-invalid={typeError ? true : undefined}
+          aria-describedby={typeError ? 'sensor-type-error' : undefined}
           value={sensorType}
           onChange={(event) => setSensorType(event.target.value)}
         >
@@ -70,17 +83,19 @@ export default function SensorForm({ onCreated }) {
             </option>
           ))}
         </select>
-        <FieldError message={errorFor('sensor_type')} />
+        <FieldError id="sensor-type-error" message={typeError} />
       </div>
 
       <label htmlFor="sensor-location">Ubicación</label>
       <div>
         <input
           id="sensor-location"
+          aria-invalid={locationError ? true : undefined}
+          aria-describedby={locationError ? 'sensor-location-error' : undefined}
           value={location}
           onChange={(event) => setLocation(event.target.value)}
         />
-        <FieldError message={errorFor('location')} />
+        <FieldError id="sensor-location-error" message={locationError} />
       </div>
 
       <div className="sensor-form-footer">
@@ -95,7 +110,16 @@ export default function SensorForm({ onCreated }) {
   )
 }
 
-function FieldError({ message }) {
+// El mensaje lleva id para que su campo pueda apuntarlo con aria-describedby:
+// asi un lector de pantalla lo lee al entrar en el campo, y no solo quien pueda
+// verlo debajo. Y role="alert" para que lo cante en cuanto aparece: llega
+// despues de enviar, cuando el foco esta en el boton y nadie esta mirando el
+// campo.
+function FieldError({ id, message }) {
   if (!message) return null
-  return <p className="sensor-form-error">{message}</p>
+  return (
+    <p className="sensor-form-error" id={id} role="alert">
+      {message}
+    </p>
+  )
 }

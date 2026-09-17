@@ -72,10 +72,14 @@ del panel siguen valiendo tal cual.
   atributo. El CSS puede preguntarlo solo: `:has(~ .sensor-form-error)` señala
   al campo al que le sigue un mensaje de error, que es exactamente donde lo pone
   el formulario. Cero cambios en el marcado.
+  *(Sustituido por la [0023](0023-el-formulario-se-anuncia.md): al añadir el
+  `aria-invalid` que aquí faltaba, el selector dejó de hacer falta.)*
 - **Que la línea del gráfico cambie de color al cruzar el umbral.** Es lo más
   vistoso que se puede hacer aquí, y es lo único que no es CSS: recharts dibuja
   la serie como un solo trazo, así que teñir un tramo pide partir los datos o
   meter un degradado. Queda fuera de esta decisión, no descartado.
+  *(Hecho en la [0024](0024-el-tramo-en-alerta-del-grafico.md), con el
+  degradado.)*
 
 ## Lo que cuesta
 
@@ -85,6 +89,7 @@ del panel siguen valiendo tal cual.
 - **El campo con error no lleva `aria-invalid`**, porque eso sí sería tocar el
   marcado: un lector de pantalla lee el mensaje, pero no anuncia el campo como
   inválido. Queda apuntado.
+  *(Cerrado en la [0023](0023-el-formulario-se-anuncia.md).)*
 - **El triángulo va en hexadecimal** (`\25B2`) y no como carácter, para que los
   siete ficheros de estilo sigan siendo ASCII y ninguna herramienta los estropee
   por el camino. Se lee peor en el código, y por eso lleva su comentario.
@@ -97,7 +102,8 @@ del panel siguen valiendo tal cual.
 - `frontend/src/App.css` — la separación entre bloques y la línea de estado.
 - `frontend/src/components/SensorCard.css` — la tarjeta, el valor y la píldora.
 - `frontend/src/components/SensorForm.css` — el formulario, y el campo en rojo
-  con `:has()`.
+  (que desde la [0023](0023-el-formulario-se-anuncia.md) cuelga del atributo que
+  lo anuncia).
 - `frontend/src/components/SensorList.css`,
   `frontend/src/components/ReadingsChart.css` y
   `frontend/src/pages/SensorDetailPage.css` — la rejilla, el gráfico y el

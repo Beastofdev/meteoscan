@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Una linea de lecturas que sube y su ultimo punto en alerta, con los dos
+       colores del panel: el del texto y el de las alertas (decision 0022). -->
+  <path d="M4 22 L12 16 L20 24 L27 9" fill="none" stroke="#1f2933" stroke-width="3.5"
+        stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="27" cy="9" r="4" fill="#b4232a"/>
+</svg>
