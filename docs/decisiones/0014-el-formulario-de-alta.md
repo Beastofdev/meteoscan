@@ -63,8 +63,8 @@ pone el formulario; y qué pasa después del alta.
 
 - **Si `sensorTypes.js` se queda atrás de la base**, al formulario le falta una
   opción. No puede crear un tipo que no existe, porque la base lo rechaza. La
-  comprobación de que las dos listas coinciden está en
-  [`pendiente.md`](../pendiente.md).
+  comprobación de que las dos listas coinciden la hace
+  `frontend/check_types.mjs`, dentro de `check.sh`.
 - **Cada error se ve solo después de enviar**: nada avisa mientras se escribe
   un nombre demasiado largo.
 - **Un alta cuesta dos peticiones**: el `POST` y el `GET` de la lista.

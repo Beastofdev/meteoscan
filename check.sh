@@ -35,6 +35,10 @@ command -v node >/dev/null 2>&1 || { echo "FALLO  no hay node en el PATH"; exit 
 
 run_check "la documentacion" node docs/check_docs.mjs
 
+# Los tipos del panel, contra los de db/schema.sql (decision 0014). Solo lee
+# ficheros: ni Docker, ni dependencias instaladas.
+run_check "los tipos del panel" node frontend/check_types.mjs
+
 # El esquema, sobre un PostgreSQL de usar y tirar en el 5439 (decision 0004).
 # Hace falta Docker en marcha.
 run_check "el esquema" bash db/check_all.sh
