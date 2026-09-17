@@ -15,6 +15,8 @@ dist/
 build/
 coverage/
 *.log
+test-results/
+playwright-report/
 
 # Del sistema operativo y del editor
 .DS_Store

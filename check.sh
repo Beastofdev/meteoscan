@@ -48,6 +48,11 @@ run_check "el esquema" bash db/check_all.sh
 # de desarrollo este parada.
 run_check "la API" bash backend/check_api.sh
 
+# El panel, contra la API de verdad y con el navegador de Playwright (decision
+# 0020). Hace falta Docker, las dependencias de los dos paquetes, el navegador
+# (npx playwright install chromium) y que el 8005 y el 5177 esten libres.
+run_check "el panel" bash frontend/check_panel.sh
+
 if [ "$ran" -eq 0 ]; then
     echo "FALLO  no se ha corrido ninguna comprobacion: la lista esta vacia"
     exit 1

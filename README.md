@@ -38,7 +38,7 @@ porque al aire libre no hay un límite que citar.
 | API | Node.js 24 y Express 5 |
 | Base de datos | PostgreSQL 18, en Docker |
 | Panel | React 19 con Vite, React Router y recharts |
-| Pruebas | `node --test` y SQL, sin librerías de pruebas |
+| Pruebas | `node --test` y SQL para la API y el esquema; Playwright para el panel |
 | Integración continua | GitHub Actions |
 
 ## Cómo arrancarlo
@@ -119,17 +119,27 @@ check.sh             la única lista de comprobaciones
 bash check.sh
 ```
 
-Cuatro comprobaciones: **la documentación** (enlaces y decisiones), **los tipos
-del panel** (que son los mismos que los de la base), **el esquema** (42 pruebas)
-y **la API** (25 pruebas).
+Cinco comprobaciones: **la documentación** (enlaces y decisiones), **los tipos
+del panel** (que son los mismos que los de la base), **el esquema** (42
+pruebas), **la API** (25 pruebas) y **el panel** (7 pruebas en un navegador de
+verdad, contra la API y el panel compilado:
+[0020](docs/decisiones/0020-las-pruebas-del-panel.md)).
 
-Las dos últimas necesitan **Docker en marcha**: corren sobre un PostgreSQL de
+Las tres últimas necesitan **Docker en marcha**: corren sobre un PostgreSQL de
 usar y tirar que se crea y se destruye en cada pasada, nunca sobre la base de
 desarrollo
-([0004](docs/decisiones/0004-toda-comprobacion-sobre-entorno-limpio.md)). Las de
-la API necesitan además las dependencias de `backend/` instaladas y **el puerto
-8005 libre**, así que la API de desarrollo tiene que estar parada mientras
-corren ([0011](docs/decisiones/0011-las-pruebas-de-la-api.md)).
+([0004](docs/decisiones/0004-toda-comprobacion-sobre-entorno-limpio.md)).
+Necesitan además las dependencias de los dos paquetes instaladas y **los puertos
+8005 y 5177 libres**, así que la API y el panel de desarrollo tienen que estar
+parados mientras corren
+([0011](docs/decisiones/0011-las-pruebas-de-la-api.md)).
+
+Y una vez por ordenador, el navegador que usan las pruebas del panel (unos
+700 MB):
+
+```
+cd frontend && npx playwright install chromium
+```
 
 La misma lista corre **antes de cada push** y **en GitHub**, en cada push y en
 cada pull request

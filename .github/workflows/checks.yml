@@ -33,4 +33,11 @@ jobs:
       # dependencias de backend/. npm ci instala exactamente las versiones de
       # package-lock.json, y falla si el lock no cuadra con package.json.
       - run: npm ci --prefix backend
+      # Las pruebas del panel compilan el panel y lo abren en un navegador.
+      - run: npm ci --prefix frontend
+      # Solo Chromium: probar tambien en Firefox y WebKit seria triplicar el
+      # tiempo para ver lo mismo (decision 0020). --with-deps instala en Ubuntu
+      # las librerias del sistema que el navegador necesita.
+      - run: npx playwright install --with-deps chromium
+        working-directory: frontend
       - run: bash check.sh
