@@ -7,17 +7,31 @@ import { UUID_PATTERN, checkBody } from '../validation.js';
 
 const router = express.Router();
 
-// GET /sensores: los sensores en servicio, por nombre, con la unidad de su
-// tipo. Los dados de baja no salen: para quien usa la API, estan eliminados.
+// GET /sensores: los sensores en servicio, por nombre, con la unidad y el
+// umbral de alerta de su tipo, y su ultima lectura. Los dados de baja no salen:
+// para quien usa la API, estan eliminados.
 router.get('/', async (req, res) => {
+  // LEFT JOIN LATERAL: el SELECT de dentro puede mirar la fila de fuera
+  // (s.sensor_id), asi que corre una vez por sensor y trae solo su ultima
+  // lectura, por el indice del UNIQUE (sensor_id, recorded_at). LEFT, para que
+  // un sensor sin lecturas siga saliendo en la lista (0018).
   const result = await pool.query(`
-    SELECT s.sensor_id, s.name, s.sensor_type, t.unit, s.location, s.created_at
+    SELECT s.sensor_id, s.name, s.sensor_type, t.unit, t.alert_threshold,
+           s.location, s.created_at,
+           r.value AS last_value, r.recorded_at AS last_recorded_at
       FROM sensors s
       JOIN sensor_types t ON t.code = s.sensor_type
+      LEFT JOIN LATERAL (
+        SELECT value, recorded_at
+          FROM readings
+         WHERE sensor_id = s.sensor_id
+         ORDER BY recorded_at DESC
+         LIMIT 1
+      ) r ON true
      WHERE s.retired_at IS NULL
      ORDER BY s.name
   `);
-  res.json(result.rows);
+  res.json(result.rows.map(toSensor));
 });
 
 // Los campos de un alta: su nombre en los mensajes, y su longitud maxima, la
@@ -42,11 +56,12 @@ router.post('/', async (req, res) => {
       VALUES ($1, $2, $3)
       RETURNING sensor_id, name, sensor_type, location, created_at
     )
-    SELECT i.sensor_id, i.name, i.sensor_type, t.unit, i.location, i.created_at
+    SELECT i.sensor_id, i.name, i.sensor_type, t.unit, t.alert_threshold,
+           i.location, i.created_at
       FROM inserted i
       JOIN sensor_types t ON t.code = i.sensor_type
   `, [sensor.name, sensor.sensor_type, sensor.location]);
-  res.status(201).json(result.rows[0]);
+  res.status(201).json(toSensor(result.rows[0]));
 });
 
 // Comprueba y limpia el cuerpo de un alta antes de tocar la base, y lanza el
@@ -133,6 +148,20 @@ router.get('/:id/lecturas', async (req, res) => {
 
 // Que no exista, que este dado de baja o que el id no sea un uuid: para quien
 // usa la API, las tres cosas son lo mismo.
+// La lista y el alta devuelven la misma forma. La ultima lectura va agrupada:
+// asi "no tiene lecturas" se dice una vez, con un null, en vez de con dos
+// campos que siempre tendrian que estar de acuerdo (0018). El alta no trae esas
+// columnas, y un sensor recien creado no tiene lecturas: de ahi los valores por
+// defecto.
+function toSensor({ last_value = null, last_recorded_at = null, ...sensor }) {
+  return {
+    ...sensor,
+    last_reading: last_recorded_at === null
+      ? null
+      : { value: last_value, recorded_at: last_recorded_at },
+  };
+}
+
 function sensorNotFound() {
   return new HttpError(404, 'sensor_not_found', 'No hay ningún sensor con ese id.');
 }

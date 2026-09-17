@@ -1,7 +1,7 @@
 // Las pruebas de /sensores: el contrato que ve el panel.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { api, createSensor, uniqueName } from './api.js';
+import { api, createSensor, isoTime, uniqueName } from './api.js';
 
 test('GET /sensores trae el sensor recien creado, con la unidad de su tipo', async () => {
   const sensor = await createSensor({ sensor_type: 'humidity' });
@@ -11,6 +11,55 @@ test('GET /sensores trae el sensor recien creado, con la unidad de su tipo', asy
   assert.ok(found, 'el sensor creado no sale en la lista');
   assert.equal(found.unit, '%RH');
   assert.equal(found.retired_at, undefined, 'la lista no debe traer retired_at');
+});
+
+test('GET /sensores trae el umbral de alerta del tipo de cada sensor', async () => {
+  const temperatura = await createSensor({ sensor_type: 'temperature' });
+  const humedad = await createSensor({ sensor_type: 'humidity' });
+  const { body } = await api('GET', '/sensores');
+  assert.equal(body.find((s) => s.sensor_id === temperatura.sensor_id).alert_threshold, 35);
+  assert.equal(body.find((s) => s.sensor_id === humedad.sensor_id).alert_threshold, null,
+    'la humedad no tiene umbral');
+});
+
+test('GET /sensores trae la ultima lectura, aunque lleguen en desorden', async () => {
+  const sensor = await createSensor();
+  const reciente = isoTime(-10);
+  const antigua = isoTime(-600);
+  for (const [value, recorded_at] of [[21.5, reciente], [18.25, antigua]]) {
+    const enviada = await api('POST', '/lecturas', { sensor_id: sensor.sensor_id, value, recorded_at });
+    assert.equal(enviada.status, 201);
+  }
+  const { body } = await api('GET', '/sensores');
+  const found = body.find((s) => s.sensor_id === sensor.sensor_id);
+  assert.equal(found.last_reading.value, 21.5, 'tiene que traer la mas reciente');
+  assert.equal(found.last_reading.recorded_at, reciente);
+});
+
+test('un sensor sin lecturas sale en la lista, con last_reading nulo', async () => {
+  const sensor = await createSensor();
+  const { body } = await api('GET', '/sensores');
+  const found = body.find((s) => s.sensor_id === sensor.sensor_id);
+  assert.ok(found, 'un sensor sin lecturas tiene que salir igual');
+  assert.equal(found.last_reading, null);
+});
+
+test('cada sensor trae su ultima lectura, no la de otro', async () => {
+  const uno = await createSensor();
+  const otro = await createSensor();
+  assert.equal((await api('POST', '/lecturas',
+    { sensor_id: uno.sensor_id, value: 1.5, recorded_at: isoTime(-20) })).status, 201);
+  assert.equal((await api('POST', '/lecturas',
+    { sensor_id: otro.sensor_id, value: 2.5, recorded_at: isoTime(-10) })).status, 201);
+  const { body } = await api('GET', '/sensores');
+  assert.equal(body.find((s) => s.sensor_id === uno.sensor_id).last_reading.value, 1.5);
+  assert.equal(body.find((s) => s.sensor_id === otro.sensor_id).last_reading.value, 2.5);
+});
+
+test('POST /sensores devuelve la misma forma que la lista', async () => {
+  const sensor = await createSensor({ sensor_type: 'pm25' });
+  assert.equal(sensor.alert_threshold, 35);
+  assert.equal(sensor.last_reading, null, 'un sensor recien creado no tiene lecturas');
 });
 
 test('POST /sensores quita los espacios de los extremos', async () => {
