@@ -59,6 +59,20 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    # La API ya sabe decir si esta bien: /health contesta 503 si no llega a la
+    # base. Aqui se le pregunta desde dentro del contenedor, con el wget que
+    # trae la imagen --- no hay curl en node:24-alpine ---.
+    #
+    # Esto contesta "puedo atender", no "estoy vivo": con la base caida, la API
+    # sale como unhealthy aunque el proceso este perfectamente. Docker no
+    # reinicia nada por eso; si algun dia lo hiciera algo por encima, esta sonda
+    # no seria la buena para decidirlo.
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8005/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
 
   panel:
     profiles: ["completo"]
@@ -69,6 +83,13 @@ services:
       - "127.0.0.1:5177:80"
     depends_on:
       - api
+    # Que nginx devuelva la pagina, no solo que el proceso siga en pie.
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1/"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
 
   simulador:
     profiles: ["completo"]
@@ -78,8 +99,12 @@ services:
     command: ["node", "src/simulator.js"]
     environment:
       API_URL: http://api:8005
+    # Espera a que la API conteste, no solo a que su contenedor exista: el
+    # simulador manda una lectura nada mas arrancar, y si no, la primera vuelta
+    # se iba en errores de conexion.
     depends_on:
-      - api
+      api:
+        condition: service_healthy
 
 volumes:
   pgdata:

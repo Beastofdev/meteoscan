@@ -33,7 +33,24 @@ publicarlo, eso lo tiene que hacer alguien.
 - **Los puertos de siempre**: 5438, 8005 y 5177.
 - **El esquema se carga solo la primera vez**, montándolo donde PostgreSQL
   ejecuta lo que encuentra al crear la base.
-- **La base avisa de cuándo está lista** (`healthcheck`), y la API espera a eso.
+- **Cada servicio con puerto dice si está bien** (`healthcheck`), y el que
+  depende de él espera a eso, no a que su contenedor exista:
+  - la base, con `pg_isready`, y la API espera;
+  - la API, preguntando a su propio `/health` desde dentro, y el simulador
+    espera —antes mandaba su primera lectura contra una API que aún no
+    escuchaba, y esa vuelta se iba en errores de conexión—;
+  - el panel, pidiéndole la página a su nginx.
+
+  Las dos últimas se preguntan con el `wget` que ya traen las imágenes: en
+  `node:24-alpine` **no hay `curl`**, y no se instala nada para una sonda.
+
+  Y hay que saber **qué pregunta esa sonda**: con la base parada, la API sale
+  como `unhealthy` aunque su proceso esté perfectamente. Es «¿puedo atender?»,
+  no «¿estoy vivo?». Docker no reinicia nada por eso; si algún día decidiera
+  reinicios algo por encima, esta no sería la sonda con la que decidirlos.
+  Comprobado el 18/09: con `docker compose stop db`, la API tarda 30 segundos
+  —tres intentos de diez— en darse por `unhealthy`, y 12 en volver a
+  `healthy` cuando la base arranca.
 - **El simulador es un servicio más**, con la misma imagen que la API y otra
   orden.
 
