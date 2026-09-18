@@ -22,7 +22,7 @@ sensores», pero un sensor eliminado no se borra: se da de baja.
 
 ## Lo que se decidió
 
-**El servidor:**
+### El servidor
 
 1. **Express 5.** Si una ruta `async` falla, el error llega solo al manejador
    de errores de Express.
@@ -35,7 +35,7 @@ sensores», pero un sensor eliminado no se borra: se da de baja.
 4. **`node --watch` para desarrollar** (`npm run dev`): reinicia la API al
    guardar un fichero.
 
-**La conexión con la base:**
+### La conexión con la base
 
 5. **Node lee el `.env`** con `--env-file=../.env`, en los scripts de
    `package.json`.
@@ -50,7 +50,7 @@ sensores», pero un sensor eliminado no se borra: se da de baja.
     servicio: `200` si la API llega a la base, y `503` si no, con el detalle
     del error solo en el registro del servidor.
 
-**Las rutas:**
+### Las rutas
 
 11. **Las rutas, en castellano, como en los requisitos** (`/sensores`,
     `/lecturas`). El código sigue en inglés.
@@ -102,6 +102,8 @@ sensores», pero un sensor eliminado no se borra: se da de baja.
 
 ## Lo que se descartó, y por qué
 
+### El servidor y sus herramientas
+
 - **Express 4**, la versión de la mayoría de los tutoriales. El error de una
   ruta `async` se escapa de Express, y desde Node 15 una promesa rechazada que
   nadie captura tumba el proceso: un fallo de la base dejaría la API caída.
@@ -117,6 +119,8 @@ sensores», pero un sensor eliminado no se borra: se da de baja.
   ([0001](0001-de-donde-salen-las-reglas.md)). `--watch` es estable desde Node
   22, y `--env-file` dejó de ser experimental en Node 24.10. Además, si falta
   el `.env`, Node no arranca.
+### La conexión con la base
+
 - **Una sola `DATABASE_URL`** (`postgres://usuario:clave@host:puerto/base`),
   habitual en los servicios de alojamiento: mete la contraseña dentro de una
   dirección, y la duplica, porque Compose ya lee `DB_PASSWORD`.
@@ -125,15 +129,15 @@ sensores», pero un sensor eliminado no se borra: se da de baja.
   pruebe también la segunda dirección.
 - **No comprobar las variables al arrancar**: el fallo llegaría con la primera
   consulta, y con un error que no dice qué variable falta.
-- **Abrir una conexión por consulta**: PostgreSQL arranca un proceso por cada
-  conexión, y hacerlo en cada petición cuesta.
-- **El tiempo de espera por defecto de `pg`**, que es sin límite: con la base
-  colgada, cada petición se quedaría esperando.
-- **El pool sin escuchar `error`**: si una conexión en reposo se cae —porque
-  la base se reinicia, por ejemplo— y nadie escucha el evento, puede tumbar la
-  API. Lo advierte la documentación de `pg`.
+- **Dejar `pg` como viene**, en sus tres detalles: una conexión por petición
+  —PostgreSQL arranca un proceso por cada una—; la espera sin límite, que con la
+  base colgada deja cada petición esperando; y el pool sin escuchar su evento
+  `error`, que según su documentación puede tumbar la API si una conexión en
+  reposo se cae.
 - **Que `/health` diga `200` aunque la base no conteste**, con el fallo solo en
   el cuerpo: quien vigila un servicio mira el código de la respuesta.
+### El vocabulario y la forma de las respuestas
+
 - **Las rutas en inglés** (`/sensors`), como el código: un cliente escrito
   según los requisitos no funcionaría.
 - **Los campos en castellano** (`nombre`), como los requisitos, o **en
@@ -152,6 +156,8 @@ sensores», pero un sensor eliminado no se borra: se da de baja.
   capas** (rutas, controladores, servicios, repositorios), lo habitual en
   proyectos grandes, es demasiado para cinco rutas (0001): el SQL se queda en
   cada ruta, y si crece, se separa entonces.
+### Las rutas, una a una
+
 - **Ignorar los campos de más en un alta**: quien mandara `retired_at` creería
   haberlo puesto.
 - **Rechazar los espacios de los extremos, o guardarlos tal cual**: lo primero
@@ -194,16 +200,13 @@ sensores», pero un sensor eliminado no se borra: se da de baja.
 - **`reading_id` como número**: sería una conversión que un día podría ir mal,
   al pasar de 2⁵³. **No devolverlo**: la lectura ya se identifica por su
   sensor y su instante, pero lo normal es que un alta devuelva lo que guardó.
-- **Devolver el histórico entero**: con el simulador en marcha, una sola
-  petición traería millones de filas.
-- **Devolverlo de la más nueva a la más antigua**: el panel tendría que darle
-  la vuelta antes de dibujar.
-- **Paginar con un cursor**, o aceptar `?desde` y `?hasta`: hace falta para
-  recorrer el histórico entero, y hoy nadie lo pide (0001). Queda en
-  [`pendiente.md`](../pendiente.md).
-- **Una sola consulta con `LEFT JOIN LATERAL`** para el histórico: ahorra un
-  viaje a la base, pero complica el SQL de una ruta, y las dos consultas usan
-  el mismo índice.
+- **En el histórico**: devolverlo entero —con el simulador en marcha, millones
+  de filas en una petición—; darlo de la más nueva a la más antigua, que
+  obligaría al panel a darle la vuelta antes de dibujar; paginarlo con un cursor
+  o con `?desde` y `?hasta`, que hace falta para recorrerlo entero y hoy nadie
+  pide (0001, y queda en [`pendiente.md`](../pendiente.md)); y sacarlo con una
+  sola consulta y un `LEFT JOIN LATERAL`, que ahorra un viaje a la base pero
+  complica el SQL de una ruta, y las dos consultas usan el mismo índice.
 - **Enseñar las lecturas de un sensor dado de baja**: `GET /sensores` no lo
   enseña, así que esta ruta tampoco. Si no, la API diría dos cosas distintas
   del mismo sensor.

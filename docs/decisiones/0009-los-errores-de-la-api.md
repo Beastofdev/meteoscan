@@ -83,24 +83,10 @@ Lo que hace Express si no se le dice otra cosa no sirve:
 
 ### Los códigos
 
-Fuente: Carlos, 2026-09-15 ([0003](0003-el-vocabulario-no-se-inventa.md)).
-Cada error nuevo añade aquí su fila.
-
-| code | HTTP | Cuándo |
-|---|---|---|
-| `invalid_json` | 400 | El cuerpo no es JSON válido |
-| `invalid_body` | 400 | El cuerpo no es un objeto JSON, lleva un campo que no existe, o `express.json()` no lo ha podido leer (entonces, con el 4xx que traiga ese error) |
-| `invalid_field` | 400 | Un campo falta, no es texto, está en blanco o es demasiado largo |
-| `unknown_sensor_type` | 400 | El tipo de sensor no existe |
-| `unknown_sensor` | 400 | No existe ese sensor, o el `sensor_id` no es un uuid |
-| `invalid_url` | 400 | La dirección tiene un `%` que no se puede descifrar |
-| `not_found` | 404 | Ninguna ruta contesta a ese método y esa ruta |
-| `sensor_not_found` | 404 | No hay ningún sensor en servicio con ese id, o el id no es un uuid |
-| `sensor_name_taken` | 409 | Ya hay un sensor en servicio con ese nombre |
-| `sensor_retired` | 409 | El sensor estaba dado de baja cuando se midió la lectura |
-| `reading_already_exists` | 409 | Ya hay una lectura de ese sensor en ese instante |
-| `body_too_large` | 413 | El cuerpo pasa del límite de `express.json()`, 100 KB |
-| `internal_error` | 500 | Un fallo que la API no esperaba |
+La lista de los trece, con su código HTTP y cuándo sale cada uno, vive donde se
+consulta: [`backend/README.md`](../../backend/README.md). Un error nuevo añade
+allí su fila. Los nombres los decidió Carlos el 15/09
+([0003](0003-el-vocabulario-no-se-inventa.md)).
 
 ## Lo que se descartó, y por qué
 
@@ -126,12 +112,11 @@ Cada error nuevo añade aquí su fila.
 - **Que cada ruta escriba su propio error** con `res.status(...).json(...)`: el
   formato quedaría copiado en cada ruta, y bastaría con que una copia se
   desviara.
-- **`422` para la validación**, que la [RFC 9110](https://www.rfc-editor.org/rfc/rfc9110)
-  define para un contenido bien escrito que no se puede procesar. Lo usan
-  algunas API, pero `400` es más simple, y cubre todo lo que está mal en lo que
-  se manda.
-- **`415` para un cuerpo que no es JSON**: es más preciso, pero sería un caso
-  aparte para una petición que el panel no hace.
+- **Afinar más el código HTTP**: el `422` que la
+  [RFC 9110](https://www.rfc-editor.org/rfc/rfc9110) define para un contenido
+  bien escrito que no se puede procesar, o el `415` para un cuerpo que no es
+  JSON. Son más precisos, y `400` es más simple y cubre todo lo que está mal en
+  lo que se manda.
 - **Traducir cualquier `23514` o `22001` como `400`**: disfrazaría un fallo de
   la validación de culpa de quien manda los datos.
 - **Comprobar antes con un `SELECT` si el nombre ya existe**: dos altas iguales
