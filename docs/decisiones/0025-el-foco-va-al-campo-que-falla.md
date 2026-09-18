@@ -1,7 +1,7 @@
 # 0025 · El foco va al campo que falla
 
 **Estado:** vigente
-**Fecha:** 2026-09-17 · **Decide:** Carlos
+**Fecha:** 2026-09-18 · **Decide:** Carlos
 
 ## El problema
 

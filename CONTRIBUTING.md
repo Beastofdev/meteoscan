@@ -42,8 +42,10 @@ Las convenciones de nombres del esquema, y cómo se carga, están en
 ```
 bash check.sh                 # todas las comprobaciones: la única lista
 node docs/check_docs.mjs      # solo la documentación
+node frontend/check_types.mjs # solo que los tipos del panel sean los de la base
 bash db/check_all.sh          # solo el esquema; hace falta Docker en marcha
 bash backend/check_api.sh     # solo la API; hace falta Docker, npm install y el 8005 libre
+bash frontend/check_panel.sh  # solo el panel; lo de la API, más el navegador y el 5177 libre
 ```
 
 Las corre un hook antes de cada push, y GitHub Actions en cada push. El hook

@@ -17,13 +17,15 @@ dibuja el histórico de cada uno y avisa cuando un valor pasa de su umbral.
 | `src/format.js` | Números, horas y cuándo un sensor está en alerta |
 | `src/sensorTypes.js` | Los códigos de la API traducidos: `temperature` → «Temperatura» |
 | `src/index.css` | Las variables del sistema visual: color, letra, espaciado y radios. Cada pieza tiene además su propio fichero de estilos |
+| `vite.config.js` | El puerto 5177 y el proxy: lo que el panel pide a `/api` acaba en la API |
 | `test/panel.spec.js` | Las 9 pruebas, en un navegador de verdad |
+| `playwright.config.js` | Cómo se compila y se sirve el panel para probarlo |
 | `check_panel.sh` | Las levanta contra la API y el panel compilado |
 | `check_types.mjs` | Comprueba que los tipos de aquí son los de la base |
 | `public/favicon.svg` | El icono de la pestaña. Lo que hay en `public/` se copia tal cual al compilar |
 | `Dockerfile`, `nginx.conf` | La imagen del panel, y el nginx que lo sirve |
 
-En total, unas 700 líneas de código y 480 de estilos.
+En total, unas 800 líneas de código y 500 de estilos.
 
 ## Por dónde empezar a leer
 
